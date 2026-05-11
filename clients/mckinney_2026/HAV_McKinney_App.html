@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hair Salon McKinney — Purchasing Tracker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#1a1a1a;--green:#4a7a2a;--green-light:#e8f0e0;
+  --amber:#e67e22;--red:#c0392b;--blue:#2980b9;
+  --border:#d8d4ce;--bg:#f5f3ef;--card:#fff;
+  --muted:#888;--checked-bg:#f0f6e8;--checked-border:#8ab85a;
+}
+body{font-family:'Inter','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--black);font-size:13px;min-height:100vh}
+
+/* ── STICKY BAR ── */
+.sticky-bar{position:sticky;top:0;z-index:100;background:var(--black);color:#fff;display:flex;align-items:center;padding:0 20px;height:52px;box-shadow:0 2px 8px rgba(0,0,0,.3);gap:12px;flex-wrap:nowrap}
+.sticky-bar h1{font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap}
+.sticky-bar h1 span{color:#a8c878}
+.role-tabs{display:flex;gap:3px;flex-shrink:0}
+.role-tab{padding:5px 11px;border-radius:4px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#aaa;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:all .15s}
+.role-tab.active[data-r="designer"]{background:#4a7a2a;color:#fff;border-color:#4a7a2a}
+.role-tab.active[data-r="client"]{background:#8b5e3c;color:#fff;border-color:#8b5e3c}
+.role-tab.active[data-r="order"]{background:#1a6393;color:#fff;border-color:#1a6393}
+.progress-wrap{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.progress-bar-outer{flex:1;height:5px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden;min-width:40px}
+.progress-bar-inner{height:100%;background:#a8c878;border-radius:3px;transition:width .3s}
+.progress-label{font-size:10px;color:#a8c878;white-space:nowrap;font-weight:600}
+.cost-pills{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.cost-pill{padding:4px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.pill-confirmed{background:#4a7a2a;color:#fff}
+.pill-remaining{background:rgba(255,255,255,.12);color:#ccc}
+.pill-total{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.2)}
+
+@media(max-width:700px){
+  .sticky-bar{height:auto;flex-wrap:wrap;padding:8px 14px;gap:8px}
+  .progress-wrap{order:4;width:100%}
+  .cost-pills{order:3;flex-wrap:wrap}
+}
+
+/* ── CONTAINER ── */
+.container{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+
+/* ── SECTION HEADERS ── */
+.section-header{display:flex;align-items:center;gap:12px;margin:28px 0 10px}
+.section-header h2{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--black);white-space:nowrap}
+.section-header .line{flex:1;height:1px;background:var(--border)}
+.section-header .section-badge{font-size:10px;font-weight:600;color:var(--muted);white-space:nowrap}
+.section-add-btn{display:none;align-items:center;gap:5px;padding:4px 10px;border-radius:4px;border:1.5px dashed #bbb;background:transparent;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s}
+.section-add-btn:hover{border-color:var(--green);color:var(--green)}
+
+/* ── ITEM CARD ── */
+.item-card{background:var(--card);border:1.5px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;transition:border-color .2s,background .2s,box-shadow .2s}
+.item-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.item-card.checked{background:var(--checked-bg);border-color:var(--checked-border)}
+.item-card.checked .card-main{opacity:.75}
+.item-card.approved{background:#f0f6e8;border-color:#8ab85a}
+.item-card.flagged{background:#fff8f0;border-color:var(--amber)}
+
+.card-main{display:flex;align-items:stretch}
+.card-check{display:flex;align-items:center;justify-content:center;width:50px;min-width:50px;background:#f8f7f4;border-right:1px solid var(--border);cursor:pointer;transition:background .2s}
+.item-card.checked .card-check{background:var(--green-light)}
+.check-circle{width:28px;height:28px;border-radius:50%;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;transition:all .15s;background:#fff}
+.item-card.checked .check-circle{background:var(--green);border-color:var(--green)}
+.check-circle svg{display:none}
+.item-card.checked .check-circle svg{display:block}
+
+/* ── CLIENT APPROVE/FLAG ── */
+.client-actions{display:none;flex-direction:column;justify-content:center;gap:6px;padding:10px 8px;width:68px;min-width:68px;border-right:1px solid var(--border)}
+.approve-btn,.flag-btn{padding:5px 6px;border-radius:5px;border:1.5px solid;font-size:9px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px;text-align:center;font-family:inherit;transition:all .15s}
+.approve-btn{border-color:#8ab85a;color:#4a7a2a;background:#f0f6e8}
+.approve-btn:hover,.item-card.approved .approve-btn{background:#4a7a2a;color:#fff;border-color:#4a7a2a}
+.flag-btn{border-color:#e8b96a;color:#b8620a;background:#fff8f0}
+.flag-btn:hover,.item-card.flagged .flag-btn{background:var(--amber);color:#fff;border-color:var(--amber)}
+.status-overlay{display:none;position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 7px;border-radius:10px;text-transform:uppercase}
+.item-card.approved .status-overlay{display:block;background:#4a7a2a;color:#fff}
+.item-card.flagged .status-overlay{display:block;background:var(--amber);color:#fff}
+.item-card{position:relative}
+
+.card-img-wrap{position:relative;width:120px;min-width:120px;height:120px;border-right:1px solid var(--border)}
+.card-img{width:100%;height:100%;object-fit:cover;display:block;background:#eee}
+.card-img-placeholder{width:100%;height:100%;background:#e8e4de;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+.card-img-placeholder span{font-size:9px;color:#999;text-align:center;padding:0 6px;line-height:1.4}
+.photo-upload-input{display:none}
+.photo-upload-hint{font-size:8px;color:#bbb;display:none}
+
+.card-content{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card-name{font-size:14px;font-weight:700;color:var(--black);line-height:1.3;margin-top:2px}
+.card-brand{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.3px}
+.card-cost{text-align:right;flex-shrink:0}
+.cost-main{font-size:17px;font-weight:700;color:var(--black)}
+.cost-sub{font-size:10px;color:var(--muted);white-space:nowrap}
+
+.badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-bottom:3px}
+.badge-sub{background:#ffe8e0;color:#c04020}
+.badge-caitlin{background:#e8e4f8;color:#5040a0}
+
+.card-specs{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.spec-pill{padding:3px 8px;background:#f5f3ef;border:1px solid var(--border);border-radius:4px;font-size:10px;color:#444}
+.spec-pill strong{color:var(--black)}
+
+/* Editable sqft pill */
+.sqft-edit-pill{padding:3px 8px;background:#f0f6e8;border:1px solid #8ab85a;border-radius:4px;font-size:10px;color:#4a7a2a;cursor:pointer;display:none;align-items:center;gap:4px}
+.sqft-edit-pill svg{opacity:.6}
+
+.card-link{font-size:10px;color:var(--muted);margin-top:3px}
+.card-link a{color:var(--green);text-decoration:none}
+.card-link a:hover{text-decoration:underline}
+
+.card-notes-toggle{display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid #eee;cursor:pointer;font-size:11px;color:var(--muted);transition:background .15s}
+.card-notes-toggle:hover{background:#f8f7f4}
+.card-notes-toggle.has-note{color:var(--amber)}
+.note-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);opacity:0;transition:opacity .15s}
+.card-notes-toggle.has-note .note-dot{opacity:1}
+.toggle-arrow{margin-left:auto;font-size:9px;transition:transform .2s;color:#bbb}
+.card-notes-toggle.open .toggle-arrow{transform:rotate(180deg)}
+.card-notes-body{display:none;padding:10px 14px;background:#fafaf8;border-top:1px solid #eee}
+.card-notes-body.open{display:block}
+.card-notes-body textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:5px;font-size:12px;font-family:inherit;color:var(--black);resize:vertical;min-height:60px;background:#fff}
+.card-notes-body textarea:focus{outline:none;border-color:var(--green)}
+
+/* ── DESIGNER EDIT OVERLAY ── */
+.designer-edit-btn{display:none;position:absolute;top:8px;right:8px;padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:#fff;font-size:9px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .15s}
+.designer-edit-btn:hover{border-color:var(--green);color:var(--green)}
+.edit-panel{display:none;padding:12px 14px;background:#fafaf8;border-top:1px solid var(--border)}
+.edit-panel.open{display:block}
+.edit-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.edit-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px}
+.edit-field label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.edit-field input{padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:inherit;background:#fff}
+.edit-field input:focus{outline:none;border-color:var(--green)}
+.photo-upload-area{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px dashed var(--border);border-radius:5px;cursor:pointer;font-size:11px;color:var(--muted);transition:all .15s}
+.photo-upload-area:hover{border-color:var(--green);color:var(--green)}
+.edit-save-btn{padding:6px 14px;background:var(--green);color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* ── HARDWOOD TABLE ── */
+.hw-table-wrap{background:var(--card);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.hw-table{width:100%;border-collapse:collapse}
+.hw-table th{background:var(--black);color:#fff;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 14px;text-align:left}
+.hw-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.hw-table tr:last-child td{border-bottom:none}
+.hw-table tr.total-row td{font-weight:700;background:#f5f3ef;font-size:13px}
+.row-check-btn{width:28px;height:28px;border-radius:50%;border:2px solid #ccc;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.row-check-btn.checked-btn{background:var(--green);border-color:var(--green)}
+.row-check-btn.checked-btn svg{display:block!important}
+.row-check-btn svg{display:none}
+tr.checked-row td{background:var(--checked-bg);color:#666}
+
+/* ── LIST ITEMS ── */
+.list-item{background:var(--card);border:1.5px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;transition:border-color .2s}
+.list-item.checked{background:var(--checked-bg);border-color:var(--checked-border)}
+.list-item.approved{background:#f0f6e8;border-color:#8ab85a}
+.list-item.flagged{background:#fff8f0;border-color:var(--amber)}
+.list-item-main{display:flex;align-items:stretch}
+.list-check{display:flex;align-items:center;justify-content:center;width:50px;min-width:50px;background:#f8f7f4;border-right:1px solid var(--border);cursor:pointer}
+.list-item.checked .list-check{background:var(--green-light)}
+.list-client-actions{display:none;flex-direction:column;justify-content:center;gap:5px;padding:8px 6px;min-width:68px;width:68px;border-right:1px solid var(--border)}
+.list-content{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr auto;align-items:center;gap:8px;padding:10px 14px}
+.lc-name{font-size:12px;font-weight:600;color:var(--black)}
+.lc-meta{font-size:10px;color:var(--muted)}
+.list-notes-toggle{display:flex;align-items:center;gap:8px;padding:7px 14px;border-top:1px solid #eee;cursor:pointer;font-size:10px;color:var(--muted)}
+.list-notes-toggle:hover{background:#f8f7f4}
+.list-notes-toggle.has-note{color:var(--amber)}
+.list-notes-body{display:none;padding:8px 14px;background:#fafaf8;border-top:1px solid #eee}
+.list-notes-body.open{display:block}
+.list-notes-body textarea{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;resize:vertical;min-height:50px}
+.list-notes-body textarea:focus{outline:none;border-color:var(--green)}
+
+/* ── SUMMARY BOX ── */
+.summary-box{background:var(--black);color:#fff;border-radius:10px;padding:22px 24px;margin-top:28px}
+.summary-box h3{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a8c878;margin-bottom:14px}
+.summary-rows{display:flex;flex-direction:column;gap:0}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px}
+.summary-row.total{border:none;border-top:1px solid rgba(255,255,255,.2);margin-top:6px;padding-top:12px;font-size:15px;font-weight:700}
+.summary-row .s-label{color:#bbb}
+.summary-row .s-val{font-weight:600}
+.summary-row.total .s-label{color:#fff}
+.summary-row.total .s-val{color:#a8c878}
+
+/* ── ORDER VIEW ── */
+.order-view{display:none}
+.order-toolbar{display:flex;align-items:center;gap:10px;margin:18px 0 12px;flex-wrap:wrap}
+.order-toolbar h2{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.order-export-btn{margin-left:auto;padding:7px 14px;background:var(--black);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.order-status-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.order-stat-pill{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;background:#f5f3ef;border:1px solid var(--border);color:var(--muted)}
+.order-stat-pill.highlight{background:var(--black);color:#a8c878;border-color:var(--black)}
+
+.order-table-wrap{overflow-x:auto;border:1.5px solid var(--border);border-radius:8px;background:var(--card)}
+.order-table{width:100%;border-collapse:collapse;font-size:11px}
+.order-table th{background:var(--black);color:#fff;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:9px 10px;text-align:left;white-space:nowrap;position:sticky;top:52px}
+.order-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.order-table tr:last-child td{border-bottom:none}
+.order-table tr:hover td{background:#f8f7f4}
+.order-table tr.cat-header td{background:#f0ede8;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:5px 10px}
+.order-table input,.order-table select{padding:4px 6px;border:1px solid var(--border);border-radius:3px;font-size:11px;font-family:inherit;background:#fff;width:100%;min-width:80px}
+.order-table input:focus,.order-table select:focus{outline:none;border-color:var(--green)}
+.order-table input[type="date"]{min-width:110px}
+.status-select{font-weight:700;border-radius:12px!important;text-align:center!important;padding:4px 6px!important}
+.status-not_ordered{background:#fee;color:#c04020;border-color:#f0b0a0!important}
+.status-ordered{background:#e0f0ff;color:#1a6393;border-color:#90c0e8!important}
+.status-in_transit{background:#fff4e0;color:#b86000;border-color:#e8c080!important}
+.status-delivered{background:#e0f6e0;color:#2a7a2a;border-color:#90d090!important}
+.status-backordered{background:#f5e0f5;color:#7a207a;border-color:#d090d0!important}
+.total-cell{font-weight:700;white-space:nowrap;text-align:right}
+.total-cell.has-cost{color:var(--black)}
+.total-cell.no-cost{color:var(--muted)}
+
+/* ── ROLE-BASED VISIBILITY ── */
+/* Client: hide check col, show approve/flag */
+[data-role="client"] .card-check{display:none}
+[data-role="client"] .client-actions{display:flex}
+[data-role="client"] .list-check{display:none}
+[data-role="client"] .list-client-actions{display:flex}
+
+/* Designer: show edit button, sqft pill, add buttons */
+[data-role="designer"] .designer-edit-btn{display:block}
+[data-role="designer"] .sqft-edit-pill{display:flex}
+[data-role="designer"] .section-add-btn{display:flex}
+[data-role="designer"] .photo-upload-hint{display:block}
+
+/* Order: show order table, hide card view */
+[data-role="order"] .card-view-wrap{display:none}
+[data-role="order"] .order-view{display:block}
+</style>
+</head>
+<body data-role="designer">
+
+<!-- ══ STICKY BAR ══ -->
+<div class="sticky-bar">
+  <h1>Hair Salon <span>McKinney</span></h1>
+  <div class="role-tabs">
+    <button class="role-tab active" data-r="designer" onclick="setRole('designer')">✏ Designer</button>
+    <button class="role-tab" data-r="client" onclick="setRole('client')">👁 Client</button>
+    <button class="role-tab" data-r="order" onclick="setRole('order')">📦 Order</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:0%"></div></div>
+    <span class="progress-label" id="progressLabel">0 / 5 confirmed</span>
+  </div>
+  <div class="cost-pills">
+    <div class="cost-pill pill-confirmed" id="pillConfirmed">✓ $0.00</div>
+    <div class="cost-pill pill-remaining" id="pillRemaining">Remaining: $39,162.50</div>
+    <div class="cost-pill pill-total" id="pillTotal">Total: $39,162.50</div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══ CARD VIEW (designer + client) ══ -->
+<div class="card-view-wrap">
+
+  <!-- TILE SECTION -->
+  <div class="section-header">
+    <h2>Flooring — Tile &amp; Stone</h2>
+    <div class="line"></div>
+    <div class="section-badge">Devon substitutions</div>
+    <button class="section-add-btn" onclick="addItem('tile')">+ Add Item</button>
+  </div>
+
+  <!-- BATH 1 -->
+  <div class="item-card" id="card-bath1">
+    <button class="designer-edit-btn" onclick="toggleEdit('bath1')">✏ Edit</button>
+    <div class="status-overlay" id="overlay-bath1"></div>
+    <div class="card-main">
+      <div class="card-check" onclick="toggleCard('bath1')">
+        <div class="check-circle"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="client-actions">
+        <button class="approve-btn" onclick="setApproval('bath1','approved')">✓ OK</button>
+        <button class="flag-btn" onclick="setApproval('bath1','flagged')">⚑ Flag</button>
+      </div>
+      <div class="card-img-wrap" id="imgwrap-bath1">
+        <img class="card-img" id="img-bath1" src="" alt="Capri Almond" style="display:none" onerror="this.style.display='none';document.getElementById('ph-bath1').style.display='flex'">
+        <div class="card-img-placeholder" id="ph-bath1" onclick="triggerUpload('bath1')">
+          <svg width="22" height="22" fill="none" stroke="#bbb" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+          <span>Tap to upload photo</span>
+          <span class="photo-upload-hint">Designer only</span>
+        </div>
+        <input class="photo-upload-input" id="upload-bath1" type="file" accept="image/*" onchange="handleUpload('bath1',this)">
+      </div>
+      <div class="card-content">
+        <div class="card-top">
+          <div>
+            <span class="badge badge-sub">Devon Substitution</span>
+            <div class="card-name">Capri Almond Matte Porcelain Tile</div>
+            <div class="card-brand">Floor &amp; Decor &nbsp;·&nbsp; SKU: 101488112 &nbsp;·&nbsp; Bathroom 1</div>
+          </div>
+          <div class="card-cost"><div class="cost-main">$342.16</div><div class="cost-sub">26 pcs × $13.16</div></div>
+        </div>
+        <div class="card-specs">
+          <span class="spec-pill"><strong>Size:</strong> 24" × 24"</span>
+          <span class="spec-pill"><strong>Finish:</strong> Matte</span>
+          <span class="spec-pill"><strong>Room:</strong> <span id="sqft-bath1">90 sqft</span></span>
+          <span class="spec-pill"><strong>+15%:</strong> 103.5 sqft</span>
+          <span class="spec-pill"><strong>Coverage:</strong> 4 sqft/pc</span>
+          <span class="spec-pill"><strong>Unit price:</strong> $3.29/sqft</span>
+          <span class="sqft-edit-pill" onclick="toggleEdit('bath1')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit sqft</span>
+        </div>
+        <div class="card-link">Replaces: Tilebar Santo Mountain Beige &nbsp;|&nbsp; <a href="https://www.flooranddecor.com/porcelain-tile/capri-almond-matte-porcelain-tile-101488112.html" target="_blank">flooranddecor.com › 101488112</a></div>
+      </div>
+    </div>
+    <div class="edit-panel" id="edit-bath1">
+      <div class="edit-row">
+        <div class="edit-field"><label>Room Sqft</label><input type="number" id="ef-sqft-bath1" placeholder="90" oninput="updateSqft('bath1',this.value)"></div>
+        <div class="edit-field"><label>Vendor</label><input type="text" placeholder="Floor & Decor"></div>
+        <div class="edit-field"><label>SKU / Product #</label><input type="text" placeholder="101488112"></div>
+        <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
+      </div>
+      <div class="edit-row">
+        <div class="edit-field"><label>Unit Price</label><input type="text" placeholder="$3.29/sqft"></div>
+        <div class="edit-field"><label>Cases / Units Needed</label><input type="text" placeholder="26 pcs"></div>
+        <div class="edit-field"><label>Total Cost</label><input type="text" placeholder="$342.16"></div>
+      </div>
+      <div class="photo-upload-area" onclick="triggerUpload('bath1')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload product photo (saved locally)
+      </div>
+    </div>
+    <div class="card-notes-toggle" id="toggle-bath1" onclick="toggleNotes('bath1')">
+      <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
+    </div>
+    <div class="card-notes-body" id="notes-bath1">
+      <textarea placeholder="Notes, questions, or follow-ups…" oninput="saveNote('bath1',this.value)"></textarea>
+    </div>
+  </div>
+
+  <!-- BATH 2 -->
+  <div class="item-card" id="card-bath2">
+    <button class="designer-edit-btn" onclick="toggleEdit('bath2')">✏ Edit</button>
+    <div class="status-overlay" id="overlay-bath2"></div>
+    <div class="card-main">
+      <div class="card-check" onclick="toggleCard('bath2')">
+        <div class="check-circle"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="client-actions">
+        <button class="approve-btn" onclick="setApproval('bath2','approved')">✓ OK</button>
+        <button class="flag-btn" onclick="setApproval('bath2','flagged')">⚑ Flag</button>
+      </div>
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://images.thdstatic.com/productImages/c96e8244-c54c-4eb7-8c74-e72c825940dc/svn/octagon-nieve-with-taco-grafito-merola-tile-porcelain-tile-kvv8olnvgf-64_600.jpg" alt="Merola Octagon">
+      </div>
+      <div class="card-content">
+        <div class="card-top">
+          <div>
+            <span class="badge badge-sub">Devon Substitution</span>
+            <div class="card-name">Laverton Octagon Nieve with Taco Grafito</div>
+            <div class="card-brand">Merola Tile &nbsp;·&nbsp; Home Depot &nbsp;·&nbsp; KVV8OLNVGF &nbsp;·&nbsp; Bathroom 2</div>
+          </div>
+          <div class="card-cost"><div class="cost-main">$2,218.92</div><div class="cost-sub">12 cases × $184.91</div></div>
+        </div>
+        <div class="card-specs">
+          <span class="spec-pill"><strong>Size:</strong> 8" × 8"</span>
+          <span class="spec-pill"><strong>Finish:</strong> Matte</span>
+          <span class="spec-pill"><strong>Room:</strong> 110 sqft</span>
+          <span class="spec-pill"><strong>+15%:</strong> 126.5 sqft</span>
+          <span class="spec-pill"><strong>Coverage:</strong> 11.25 sqft/case</span>
+          <span class="spec-pill"><strong>Unit price:</strong> $16.44/sqft</span>
+          <span class="sqft-edit-pill" onclick="toggleEdit('bath2')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit sqft</span>
+        </div>
+        <div class="card-link">Replaces: Tilebar Santo Mountain Beige &nbsp;|&nbsp; <a href="https://www.homedepot.com/p/335997641" target="_blank">homedepot.com › 335997641</a></div>
+      </div>
+    </div>
+    <div class="edit-panel" id="edit-bath2">
+      <div class="edit-row">
+        <div class="edit-field"><label>Room Sqft</label><input type="number" id="ef-sqft-bath2" placeholder="110" oninput="updateSqft('bath2',this.value)"></div>
+        <div class="edit-field"><label>Unit Price</label><input type="text" placeholder="$16.44/sqft"></div>
+        <div class="edit-field"><label>Cases Needed</label><input type="text" placeholder="12 cases"></div>
+        <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
+      </div>
+    </div>
+    <div class="card-notes-toggle" id="toggle-bath2" onclick="toggleNotes('bath2')">
+      <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
+    </div>
+    <div class="card-notes-body" id="notes-bath2">
+      <textarea placeholder="Notes, questions, or follow-ups…" oninput="saveNote('bath2',this.value)"></textarea>
+    </div>
+  </div>
+
+  <!-- KITCHEN -->
+  <div class="item-card" id="card-kitchen">
+    <button class="designer-edit-btn" onclick="toggleEdit('kitchen')">✏ Edit</button>
+    <div class="status-overlay" id="overlay-kitchen"></div>
+    <div class="card-main">
+      <div class="card-check" onclick="toggleCard('kitchen')">
+        <div class="check-circle"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="client-actions">
+        <button class="approve-btn" onclick="setApproval('kitchen','approved')">✓ OK</button>
+        <button class="flag-btn" onclick="setApproval('kitchen','flagged')">⚑ Flag</button>
+      </div>
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://images.thdstatic.com/productImages/f4f1af7e-d57f-4f52-b0f3-5979c95817a9/svn/villa-bianca-msi-porcelain-tile-nwglatblo1717-64_600.jpg" alt="MSI Villa Bianca">
+      </div>
+      <div class="card-content">
+        <div class="card-top">
+          <div>
+            <span class="badge badge-sub">Devon Substitution</span>
+            <div class="card-name">Villa Bianca 17×17 Matte Porcelain Checkerboard</div>
+            <div class="card-brand">MSI &nbsp;·&nbsp; Home Depot &nbsp;·&nbsp; 340079451 &nbsp;·&nbsp; Kitchen + Utility Room</div>
+          </div>
+          <div class="card-cost"><div class="cost-main">$1,324.08</div><div class="cost-sub">18 cases × $73.56 ★ Sale</div></div>
+        </div>
+        <div class="card-specs">
+          <span class="spec-pill"><strong>Size:</strong> 17" × 17"</span>
+          <span class="spec-pill"><strong>Finish:</strong> Matte</span>
+          <span class="spec-pill"><strong>Room:</strong> 230 sqft</span>
+          <span class="spec-pill"><strong>+15%:</strong> 264.5 sqft</span>
+          <span class="spec-pill"><strong>Coverage:</strong> 14.8 sqft/case</span>
+          <span class="spec-pill"><strong>Unit price:</strong> $4.97/sqft ★</span>
+          <span class="sqft-edit-pill" onclick="toggleEdit('kitchen')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit sqft</span>
+        </div>
+        <div class="card-link">Devon sub — replaces Dekton Kraftizen &nbsp;|&nbsp; <a href="https://www.homedepot.com/p/340079451" target="_blank">homedepot.com › 340079451</a></div>
+      </div>
+    </div>
+    <div class="edit-panel" id="edit-kitchen">
+      <div class="edit-row">
+        <div class="edit-field"><label>Room Sqft</label><input type="number" id="ef-sqft-kitchen" placeholder="230" oninput="updateSqft('kitchen',this.value)"></div>
+        <div class="edit-field"><label>Unit Price</label><input type="text" placeholder="$4.97/sqft"></div>
+        <div class="edit-field"><label>Cases Needed</label><input type="text" placeholder="18 cases"></div>
+        <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
+      </div>
+    </div>
+    <div class="card-notes-toggle" id="toggle-kitchen" onclick="toggleNotes('kitchen')">
+      <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
+    </div>
+    <div class="card-notes-body" id="notes-kitchen">
+      <textarea placeholder="Notes, questions, or follow-ups…" oninput="saveNote('kitchen',this.value)"></textarea>
+    </div>
+  </div>
+
+  <!-- SHAMPOO -->
+  <div class="item-card" id="card-shampoo">
+    <button class="designer-edit-btn" onclick="toggleEdit('shampoo')">✏ Edit</button>
+    <div class="status-overlay" id="overlay-shampoo"></div>
+    <div class="card-main">
+      <div class="card-check" onclick="toggleCard('shampoo')">
+        <div class="check-circle"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="client-actions">
+        <button class="approve-btn" onclick="setApproval('shampoo','approved')">✓ OK</button>
+        <button class="flag-btn" onclick="setApproval('shampoo','flagged')">⚑ Flag</button>
+      </div>
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://assets.wfcdn.com/im/09209484/resize-h800-w800%5Ecompr-r85/2192/219234040/default_name.jpg" alt="Marble Fan Mosaic" onerror="this.style.display='none'">
+      </div>
+      <div class="card-content">
+        <div class="card-top">
+          <div>
+            <span class="badge badge-sub">Devon Substitution</span>
+            <div class="card-name">12.6" × 7.28" Marble Fan Mosaic Sheet</div>
+            <div class="card-brand">Marble Online &nbsp;·&nbsp; Wayfair &nbsp;·&nbsp; IRBL1422 &nbsp;·&nbsp; Shampoo Room Under Chairs</div>
+          </div>
+          <div class="card-cost"><div class="cost-main">$15,285.72</div><div class="cost-sub">381 pcs × $40.12</div></div>
+        </div>
+        <div class="card-specs">
+          <span class="spec-pill"><strong>Size:</strong> 320mm × 185mm</span>
+          <span class="spec-pill"><strong>Finish:</strong> Polished Marble</span>
+          <span class="spec-pill"><strong>Area:</strong> 9' × 12.5' = 112.5 sqft</span>
+          <span class="spec-pill"><strong>+15%:</strong> 129.4 sqft</span>
+          <span class="spec-pill"><strong>Coverage:</strong> 0.34 sqft/pc</span>
+          <span class="spec-pill"><strong>Unit price:</strong> $40.12/pc</span>
+          <span class="sqft-edit-pill" onclick="toggleEdit('shampoo')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit sqft</span>
+        </div>
+        <div class="card-link">Devon sub — replaces Daltile Cascade Ridge penny round &nbsp;|&nbsp; <a href="https://www.wayfair.com/home-improvement/pdp/marble-online-126-x-728-marble-mosaic-sheet-subway-wall-floor-tile-irbl1422.html" target="_blank">wayfair.com › IRBL1422</a></div>
+      </div>
+    </div>
+    <div class="edit-panel" id="edit-shampoo">
+      <div class="edit-row">
+        <div class="edit-field"><label>Area Sqft</label><input type="number" id="ef-sqft-shampoo" placeholder="112.5" oninput="updateSqft('shampoo',this.value)"></div>
+        <div class="edit-field"><label>Unit Price / Piece</label><input type="text" placeholder="$40.12/pc"></div>
+        <div class="edit-field"><label>Pieces Needed</label><input type="text" placeholder="381 pcs"></div>
+        <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
+      </div>
+    </div>
+    <div class="card-notes-toggle" id="toggle-shampoo" onclick="toggleNotes('shampoo')">
+      <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
+    </div>
+    <div class="card-notes-body" id="notes-shampoo">
+      <textarea placeholder="Notes, questions, or follow-ups…" oninput="saveNote('shampoo',this.value)"></textarea>
+    </div>
+  </div>
+
+  <!-- HARDWOOD SECTION -->
+  <div class="section-header">
+    <h2>Flooring — Hardwood</h2><div class="line"></div>
+    <div class="section-badge">ADM Flooring · 121 boxes total</div>
+    <button class="section-add-btn" onclick="addItem('hardwood')">+ Add Room</button>
+  </div>
+
+  <div class="item-card" id="card-adm">
+    <button class="designer-edit-btn" onclick="toggleEdit('adm')">✏ Edit</button>
+    <div class="status-overlay" id="overlay-adm"></div>
+    <div class="card-main">
+      <div class="card-check" onclick="toggleCard('adm')">
+        <div class="check-circle"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="client-actions">
+        <button class="approve-btn" onclick="setApproval('adm','approved')">✓ OK</button>
+        <button class="flag-btn" onclick="setApproval('adm','flagged')">⚑ Flag</button>
+      </div>
+      <div class="card-img-wrap">
+        <img class="card-img" src="https://admflooring.com/wp-content/uploads/2022/07/RAGUSA-1.jpg" alt="ADM Ragusa" onerror="this.style.display='none'">
+      </div>
+      <div class="card-content">
+        <div class="card-top">
+          <div>
+            <div class="card-name">White Oak Engineered Hardwood — Monza / Ragusa</div>
+            <div class="card-brand">ADM Flooring &nbsp;·&nbsp; SKU: RAGUSA &nbsp;·&nbsp; 6 Rooms</div>
+          </div>
+          <div class="card-cost"><div class="cost-main">$19,991.62</div><div class="cost-sub">121 boxes × $165.22</div></div>
+        </div>
+        <div class="card-specs">
+          <span class="spec-pill"><strong>Panel:</strong> 31.5" sq</span>
+          <span class="spec-pill"><strong>Finish:</strong> Oil</span>
+          <span class="spec-pill"><strong>Total area:</strong> 1,408.5 sqft</span>
+          <span class="spec-pill"><strong>+15%:</strong> 1,619.8 sqft</span>
+          <span class="spec-pill"><strong>Coverage:</strong> 13.78 sqft/box</span>
+          <span class="spec-pill"><strong>Pick-up:</strong> $11.99/sqft</span>
+        </div>
+        <div class="card-link">Free delivery on 37+ boxes &nbsp;|&nbsp; <a href="https://admflooring.com/ragusa-white-oak-engineered-hardwood/" target="_blank">admflooring.com › ragusa</a></div>
+      </div>
+    </div>
+    <div class="edit-panel" id="edit-adm">
+      <div class="edit-row">
+        <div class="edit-field"><label>Price / Box</label><input type="text" placeholder="$165.22"></div>
+        <div class="edit-field"><label>Sqft / Box</label><input type="text" placeholder="13.78"></div>
+        <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
+      </div>
+    </div>
+    <div class="card-notes-toggle" id="toggle-adm" onclick="toggleNotes('adm')">
+      <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
+    </div>
+    <div class="card-notes-body" id="notes-adm">
+      <textarea placeholder="Notes, questions, or follow-ups…" oninput="saveNote('adm',this.value)"></textarea>
+    </div>
+  </div>
+
+  <!-- HARDWOOD ROOM TABLE -->
+  <div class="hw-table-wrap">
+    <table class="hw-table">
+      <thead><tr><th style="width:50px"></th><th>Room</th><th>Room Sqft</th><th>+15%</th><th>Boxes</th></tr></thead>
+      <tbody>
+        <tr id="row-lobby"><td><button class="row-check-btn" onclick="toggleRow('lobby')"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td><td>Lobby</td><td>320</td><td>368.0</td><td>27</td></tr>
+        <tr id="row-hallway"><td><button class="row-check-btn" onclick="toggleRow('hallway')"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td><td>Hallway</td><td>252</td><td>289.8</td><td>22</td></tr>
+        <tr id="row-salon1"><td><button class="row-check-btn" onclick="toggleRow('salon1')"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td><td>Salon Room 1</td><td>256</td><td>294.4</td><td>22</td></tr>
+        <tr id="row-salon2"><td><button class="row-check-btn" onclick="toggleRow('salon2')"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td><td>Salon Room 2</td><td>221</td><td>254.2</td><td>19</td></tr>
+        <tr id="row-shampooroom"><td><button class="row-check-btn" onclick="toggleRow('shampooroom')"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td><td>Shampoo Room<br><small style="color:#999">(excl. mosaic area)</small></td><td>119.5</td><td>137.4</td><td>10</td></tr>
+        <tr id="row-office"><td><button class="row-check-btn" onclick="toggleRow('office')"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td><td>Office</td><td>250</td><td>287.5</td><td>21</td></tr>
+        <tr class="total-row"><td></td><td>Total — ADM Ragusa</td><td>1,408.5</td><td>1,619.8</td><td>121 boxes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- WALL TILE SECTION -->
+  <div class="section-header">
+    <h2>Wall Tile &amp; Surfaces</h2><div class="line"></div>
+    <div class="section-badge">Caitlin spec — original schedule</div>
+    <button class="section-add-btn" onclick="addItem('wall')">+ Add Item</button>
+  </div>
+  <div id="list-walltile"></div>
+
+  <!-- PAINT SECTION -->
+  <div class="section-header">
+    <h2>Paint — Meoded Limewash</h2><div class="line"></div>
+    <div class="section-badge">Via General Contractor</div>
+    <button class="section-add-btn" onclick="addItem('paint')">+ Add Item</button>
+  </div>
+  <div id="list-paint"></div>
+
+  <!-- EQUIPMENT SECTION -->
+  <div class="section-header">
+    <h2>Salon Equipment</h2><div class="line"></div>
+    <button class="section-add-btn" onclick="addItem('equipment')">+ Add Item</button>
+  </div>
+  <div id="list-equipment"></div>
+
+  <!-- LIGHTING SECTION -->
+  <div class="section-header">
+    <h2>Lighting</h2><div class="line"></div>
+    <button class="section-add-btn" onclick="addItem('lighting')">+ Add Item</button>
+  </div>
+  <div id="list-lighting"></div>
+
+  <!-- SUMMARY -->
+  <div class="summary-box">
+    <h3>Flooring Cost Summary</h3>
+    <div class="summary-rows">
+      <div class="summary-row"><span class="s-label">Bathroom 1 — F&amp;D Capri Almond (26 pcs)</span><span class="s-val">$342.16</span></div>
+      <div class="summary-row"><span class="s-label">Bathroom 2 — Merola Laverton Octagon (12 cases)</span><span class="s-val">$2,218.92</span></div>
+      <div class="summary-row"><span class="s-label">Kitchen + Utility — MSI Villa Bianca (18 cases)</span><span class="s-val">$1,324.08</span></div>
+      <div class="summary-row"><span class="s-label">Under Shampoo Chairs — Marble Fan Mosaic (381 pcs)</span><span class="s-val">$15,285.72</span></div>
+      <div class="summary-row" style="font-weight:600"><span class="s-label" style="color:#fff">Subtotal — Tile</span><span class="s-val">$19,170.88</span></div>
+      <div class="summary-row"><span class="s-label">Hardwood — ADM Ragusa (121 boxes, 6 rooms)</span><span class="s-val">$19,991.62</span></div>
+      <div class="summary-row total"><span class="s-label">Total Flooring Materials</span><span class="s-val">$39,162.50</span></div>
+    </div>
+  </div>
+
+</div><!-- /card-view-wrap -->
+
+<!-- ══ ORDER VIEW ══ -->
+<div class="order-view">
+  <div class="order-toolbar">
+    <h2>Order Tracking — All Items</h2>
+    <button class="order-export-btn" onclick="exportOrderCSV()">⬇ Export CSV</button>
+  </div>
+  <div class="order-status-pills" id="orderStatPills"></div>
+  <div class="order-table-wrap">
+    <table class="order-table" id="orderTable">
+      <thead>
+        <tr>
+          <th>#</th><th>Category</th><th>Room / Location</th><th>Product</th>
+          <th>Vendor · SKU</th><th>Qty</th><th>Unit</th><th>Total</th>
+          <th>Status</th><th>PO #</th><th>Vendor Contact</th>
+          <th>Order Date</th><th>Exp. Delivery</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="orderTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ── ALL ITEMS DATA ──────────────────────────────────────────────────────
+const ALL_ITEMS = [
+  {id:'bath1',  cat:'Tile',      room:'Bathroom 1',             name:'Capri Almond Matte Porcelain Tile',       vendor:'Floor & Decor', sku:'101488112',         qty:'26 pcs',      unit:'$13.16/pc',    total:342.16,     sub:true},
+  {id:'bath2',  cat:'Tile',      room:'Bathroom 2',             name:'Laverton Octagon Nieve / Taco Grafito',   vendor:'Home Depot',    sku:'KVV8OLNVGF',        qty:'12 cases',    unit:'$184.91/case', total:2218.92,    sub:true},
+  {id:'kitchen',cat:'Tile',      room:'Kitchen + Utility',      name:'MSI Villa Bianca 17×17 Checkerboard',     vendor:'Home Depot',    sku:'340079451',         qty:'18 cases',    unit:'$73.56/case',  total:1324.08,    sub:true},
+  {id:'shampoo',cat:'Tile',      room:'Shampoo Room (chairs)',  name:'12.6"×7.28" Marble Fan Mosaic Sheet',     vendor:'Wayfair',       sku:'IRBL1422',          qty:'381 pcs',     unit:'$40.12/pc',    total:15285.72,   sub:true},
+  {id:'hw-lobby',    cat:'Hardwood', room:'Lobby',              name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'27 boxes',    unit:'$165.22/box',  total:4460.94},
+  {id:'hw-hallway',  cat:'Hardwood', room:'Hallway',            name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'22 boxes',    unit:'$165.22/box',  total:3634.84},
+  {id:'hw-salon1',   cat:'Hardwood', room:'Salon Room 1',       name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'22 boxes',    unit:'$165.22/box',  total:3634.84},
+  {id:'hw-salon2',   cat:'Hardwood', room:'Salon Room 2',       name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'19 boxes',    unit:'$165.22/box',  total:3139.18},
+  {id:'hw-shampoo',  cat:'Hardwood', room:'Shampoo Room',       name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'10 boxes',    unit:'$165.22/box',  total:1652.20},
+  {id:'hw-office',   cat:'Hardwood', room:'Office',             name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'21 boxes',    unit:'$165.22/box',  total:3469.62},
+  {id:'w1', cat:'Wall/Surface',  room:'Bathroom 1 — Wall',      name:'Microsaic Plaid Wooden Beige Polished Marble', vendor:'Tilebar',   sku:'—',                 qty:'TBD',         unit:'TBD',          total:null},
+  {id:'w2', cat:'Wall/Surface',  room:'Bathroom 1 — Grout',     name:'Laticrete Permacolor Bright White Grout', vendor:'Laticrete',    sku:'—',                  qty:'TBD',         unit:'TBD',          total:null},
+  {id:'w3', cat:'Wall/Surface',  room:'Salon Built-Ins',        name:'Masso Pearl Manufactured Stone',          vendor:'Floor & Decor',sku:'101233351',          qty:'TBD',         unit:'TBD',          total:null},
+  {id:'w4', cat:'Wall/Surface',  room:'Salon Built-Ins Grout',  name:'Laticrete Permacolor Marble Beige Grout', vendor:'Floor & Decor',sku:'100895416',          qty:'TBD',         unit:'TBD',          total:null},
+  {id:'w5', cat:'Wall/Surface',  room:'Devyn + Salon 2',        name:'Trevi Dekton — Pietra Edition',           vendor:'Cosentino',    sku:'—',                  qty:'TBD',         unit:'TBD',          total:null},
+  {id:'w6', cat:'Wall/Surface',  room:'Kitchen Surfaces',       name:'Kraftizen Albarium Dekton',               vendor:'Cosentino',    sku:'—',                  qty:'TBD',         unit:'TBD',          total:null},
+  {id:'w7', cat:'Wall/Surface',  room:'Lobby Accent Wall',      name:'Gracious Landscape Anthracite Mural',     vendor:'Belarte Studio',sku:'1 panel',           qty:'1 panel',     unit:'TBD',          total:null},
+  {id:'p1', cat:'Paint',         room:'Bathroom 1 + 2',         name:'Cocoa Limewash',                          vendor:'Meoded (GC)',   sku:'MC-833',             qty:'TBD',         unit:'Via GC',       total:null},
+  {id:'p2', cat:'Paint',         room:'Lobby/Hallway/Kitchen',  name:'Cumulous Limewash',                       vendor:'Meoded (GC)',   sku:'MC-721',             qty:'TBD',         unit:'Via GC',       total:null},
+  {id:'p3', cat:'Paint',         room:'Devyn/Salon 2/Shampoo',  name:'Villa Limewash ⚠ confirm code',           vendor:'Meoded (GC)',   sku:'MC-Villa (TBD)',     qty:'TBD',         unit:'Via GC',       total:null},
+  {id:'e1', cat:'Equipment',     room:'Shampoo Room',           name:'Avant Shampoo System w/ Black Bowl',      vendor:'Minerva Beauty',sku:'5869maB',            qty:'3',           unit:'TBD',          total:null},
+  {id:'e2', cat:'Equipment',     room:'Salon Rooms',            name:'Murano Extra Wide Styling Chair',         vendor:'Minerva Beauty',sku:'2861br-mbp-3s-b',   qty:'4',           unit:'TBD',          total:null},
+  {id:'l1', cat:'Lighting',      room:'TBD',                    name:'Aldwin Pendant',                          vendor:'Soho Home',    sku:'—',                  qty:'1',           unit:'TBD',          total:null},
+  {id:'l2', cat:'Lighting',      room:'Shampoo Room',           name:'Brass Chain Swag Chandelier',             vendor:'Etsy/Hangout', sku:'1661242144',         qty:'1',           unit:'TBD',          total:null},
+  {id:'l3', cat:'Lighting',      room:'Devyn Salon Built-In',   name:'Mid-Century Sconce — Antique Brass',      vendor:'Etsy/MODCREATION',sku:'4403098139',      qty:'2',           unit:'TBD',          total:null},
+  {id:'l4', cat:'Lighting',      room:'Salon 2 Built-In',       name:'Alabaster Wall Sconce w/ Brass Arm',      vendor:'Etsy/Brilliance',sku:'4338376325',       qty:'2',           unit:'TBD',          total:null},
+  {id:'l5', cat:'Lighting',      room:'Main Bathroom',          name:'Modern Brass Double Wall Sconce',         vendor:'Etsy/Italian Light',sku:'4442818019',     qty:'1',           unit:'TBD',          total:null},
+];
+
+const COST_ITEMS = {bath1:342.16,bath2:2218.92,kitchen:1324.08,shampoo:15285.72,adm:19991.62};
+const TOTAL_COST = Object.values(COST_ITEMS).reduce((a,b)=>a+b,0);
+
+const WALL_ITEMS = [
+  {id:'w1',name:'Microsaic Plaid Wooden Beige Polished Marble Tile',brand:'Tilebar · Tilebar',meta:'12.2"×12.2" · Polished',location:'Bathroom 1 — Wall',note:'1 wall OR halfway up all walls — confirm scope with Caitlin'},
+  {id:'w2',name:'Laticrete Permacolor Bright White Grout',brand:'Laticrete',meta:'—',location:'Bathroom 1 — Grout',note:'Per Caitlin spec'},
+  {id:'w3',name:'Masso Pearl Manufactured Stone',brand:'Floor & Decor · SKU: 101233351',meta:'Heavily Overgrouted',location:'Salon Room Built-Ins',note:'Per Caitlin spec'},
+  {id:'w4',name:'Laticrete Permacolor Marble Beige Grout',brand:'Floor & Decor · SKU: 100895416',meta:'Heavily Overgrouted',location:'Salon Room Built-Ins Grout',note:'Per Caitlin spec'},
+  {id:'w5',name:'Trevi Dekton — Pietra Edition',brand:'Dekton · Cosentino',meta:'Matte',location:'Devyn Salon & Salon 2 — Surfaces (NOT floor)',note:''},
+  {id:'w6',name:'Kraftizen Albarium Dekton',brand:'Dekton · Cosentino',meta:'—',location:'Kitchen — Surfaces',note:'Confirm scope with designer'},
+  {id:'w7',name:'Gracious Landscape Anthracite Mural',brand:'Belarte Studio · 1 panel',meta:'—',location:'Lobby — 1 Accent Wall',note:''},
+];
+const PAINT_ITEMS = [
+  {id:'p1',name:'Cocoa Limewash',brand:'Meoded · MC-833',meta:'Color Drench',location:'Bathroom 1 + Bathroom 2',note:'Ceiling + walls + baseboards'},
+  {id:'p2',name:'Cumulous Limewash',brand:'Meoded · MC-721',meta:'Color Drench',location:'Lobby, Hallway, Kitchen, Office',note:'Ceiling + walls + baseboards'},
+  {id:'p3',name:'Villa Limewash ⚠ Code incomplete',brand:'Meoded · MC-Villa',meta:'Color Drench',location:'Devyn Salon, Salon 2, Shampoo Room',note:'⚠ Confirm exact MC color code with Caitlin before ordering'},
+];
+const EQUIP_ITEMS = [
+  {id:'e1',name:'Avant Shampoo System with Black Bowl (Ottoman Incl.)',brand:'Minerva Beauty · 5869maB',meta:'25"W×55.5"D×34"H · Mocha',location:'Shampoo Room · Qty: 3',note:'Flexible drain hose: 1.25"W × 27.5"L'},
+  {id:'e2',name:'Murano Extra Wide Salon Styling Chair — 360° Swivel',brand:'Minerva Beauty · 2861br-mbp-3s-b',meta:'29"W×37"D · Bark Brown / Black',location:'Salon Rooms · Qty: 4',note:''},
+];
+const LIGHT_ITEMS = [
+  {id:'l1',name:'Aldwin Pendant',brand:'Soho Home',meta:'H47.2"×W27.6" · 6×E12 / Tala 6W Globe LED',location:'TBD — confirm with designer · Qty: 1',note:''},
+  {id:'l2',name:'Brass Chain Swag Chandelier — White Glass Globe',brand:'Hangout Lighting · Etsy',meta:'Globes: 10"/12"/14" · Brass chain · 5 lights',location:'Shampoo Room · Qty: 1',note:''},
+  {id:'l3',name:'Mid-Century Sconce — Antique Brass & Cream Shade',brand:'MODCREATION Studio · Etsy',meta:'Antique Brass',location:'Devyn Salon Built-In · Qty: 2',note:''},
+  {id:'l4',name:'Alabaster Wall Sconce with Brass Arm',brand:'Brilliance Lightings · Etsy',meta:'Antique Brass',location:'Salon 2 Built-In · Qty: 2',note:''},
+  {id:'l5',name:'Modern Brass Double Wall Sconce — Vanity',brand:'The Italian Light Store · Etsy',meta:'Raw Brass',location:'Main Bathroom · Qty: 1',note:''},
+];
+
+// ── STATE ───────────────────────────────────────────────────────────────
+const KEY = 'mck_state_v2';
+let state = JSON.parse(localStorage.getItem(KEY) || '{"role":"designer","checked":{},"notes":{},"approvals":{},"order":{},"photos":{}}');
+function saveState(){localStorage.setItem(KEY,JSON.stringify(state))}
+
+// ── ROLE ────────────────────────────────────────────────────────────────
+function setRole(r){
+  state.role=r; saveState();
+  document.body.dataset.role=r;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.toggle('active',t.dataset.r===r));
+  if(r==='order') renderOrderTable();
+  updateTotals();
+}
+
+// ── RENDER LIST ITEMS ────────────────────────────────────────────────────
+function renderList(items, containerId){
+  const c=document.getElementById(containerId);
+  c.innerHTML=items.map(item=>`
+    <div class="list-item${state.checked[item.id]?' checked':''}${state.approvals[item.id]==='approved'?' approved':state.approvals[item.id]==='flagged'?' flagged':''}" id="lcard-${item.id}" style="position:relative">
+      <div class="list-item-main">
+        <div class="list-check" onclick="toggleListItem('${item.id}')">
+          <div class="check-circle${state.checked[item.id]?' style=background:#4a7a2a;border-color:#4a7a2a':''}">
+            ${state.checked[item.id]?'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+          </div>
+        </div>
+        <div class="list-client-actions">
+          <button class="approve-btn" onclick="setListApproval('${item.id}','approved')">✓ OK</button>
+          <button class="flag-btn" onclick="setListApproval('${item.id}','flagged')">⚑ Flag</button>
+        </div>
+        <div class="list-content">
+          <div><div class="lc-name">${item.name}</div><div class="lc-meta">${item.brand}</div></div>
+          <div class="lc-meta">${item.meta}</div>
+          <div class="lc-meta">${item.location}</div>
+          <div class="lc-meta" style="color:#c04020">${item.note||''}</div>
+        </div>
+      </div>
+      <div class="list-notes-toggle${state.notes[item.id]?' has-note':''}" onclick="toggleListNotes('${item.id}')">
+        <div class="note-dot"></div>
+        <span>${state.notes[item.id]?'📝 '+state.notes[item.id].substring(0,60)+(state.notes[item.id].length>60?'…':''):'Add note / question'}</span>
+        <span class="toggle-arrow" style="margin-left:auto">▼</span>
+      </div>
+      <div class="list-notes-body${state.notes[item.id]?' open':''}" id="lnotes-${item.id}">
+        <textarea placeholder="Notes, questions, or follow-ups…" oninput="saveNote('${item.id}',this.value)">${state.notes[item.id]||''}</textarea>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── RENDER ORDER TABLE ────────────────────────────────────────────────────
+function renderOrderTable(){
+  const STATUS_LABELS={not_ordered:'Not Ordered',ordered:'Ordered',in_transit:'In Transit',delivered:'Delivered',backordered:'Backordered'};
+  let prevCat=''; let rowNum=0;
+  const rows = ALL_ITEMS.map(item=>{
+    const o = state.order[item.id] || {};
+    const status = o.status || 'not_ordered';
+    let catRow = '';
+    if(item.cat !== prevCat){ prevCat=item.cat; catRow=`<tr class="cat-header"><td colspan="14">${item.cat.toUpperCase()}</td></tr>`; }
+    rowNum++;
+    return catRow+`
+      <tr data-id="${item.id}">
+        <td style="color:#999;font-size:10px">${rowNum}</td>
+        <td style="font-size:10px;color:#666">${item.cat}</td>
+        <td>${item.room}</td>
+        <td><strong>${item.name}</strong>${item.sub?'<br><span style="font-size:9px;color:#c04020">Devon sub</span>':''}</td>
+        <td style="font-size:10px">${item.vendor}<br><span style="color:#999">${item.sku}</span></td>
+        <td>${item.qty}</td>
+        <td style="color:#666">${item.unit}</td>
+        <td class="total-cell ${item.total?'has-cost':'no-cost'}">${item.total?'$'+item.total.toLocaleString('en-US',{minimumFractionDigits:2}):'—'}</td>
+        <td><select class="status-select status-${status}" onchange="updateOrder('${item.id}','status',this.value);this.className='status-select status-'+this.value">
+          ${Object.entries(STATUS_LABELS).map(([v,l])=>`<option value="${v}"${status===v?' selected':''}>${l}</option>`).join('')}
+        </select></td>
+        <td><input type="text" placeholder="PO-" value="${o.po||''}" oninput="updateOrder('${item.id}','po',this.value)" style="min-width:70px"></td>
+        <td><input type="text" placeholder="Name / Phone" value="${o.contact||''}" oninput="updateOrder('${item.id}','contact',this.value)" style="min-width:100px"></td>
+        <td><input type="date" value="${o.order_date||''}" oninput="updateOrder('${item.id}','order_date',this.value)"></td>
+        <td><input type="date" value="${o.exp_delivery||''}" oninput="updateOrder('${item.id}','exp_delivery',this.value)"></td>
+        <td><input type="text" placeholder="Notes…" value="${o.notes||''}" oninput="updateOrder('${item.id}','notes',this.value)" style="min-width:120px"></td>
+      </tr>`;
+  }).join('');
+  document.getElementById('orderTableBody').innerHTML = rows;
+  updateOrderStats();
+}
+
+function updateOrder(id, field, val){
+  if(!state.order[id]) state.order[id]={};
+  state.order[id][field]=val;
+  saveState();
+  updateOrderStats();
+}
+
+function updateOrderStats(){
+  const counts={not_ordered:0,ordered:0,in_transit:0,delivered:0,backordered:0};
+  ALL_ITEMS.forEach(item=>{ const s=(state.order[item.id]||{}).status||'not_ordered'; counts[s]=(counts[s]||0)+1; });
+  const total=ALL_ITEMS.length;
+  document.getElementById('orderStatPills').innerHTML=`
+    <div class="order-stat-pill highlight">${total} items total</div>
+    <div class="order-stat-pill" style="border-color:#f0b0a0;color:#c04020">${counts.not_ordered} not ordered</div>
+    <div class="order-stat-pill" style="border-color:#90c0e8;color:#1a6393">${counts.ordered} ordered</div>
+    <div class="order-stat-pill" style="border-color:#e8c080;color:#b86000">${counts.in_transit} in transit</div>
+    <div class="order-stat-pill" style="border-color:#90d090;color:#2a7a2a">${counts.delivered} delivered</div>
+    ${counts.backordered?`<div class="order-stat-pill" style="border-color:#d090d0;color:#7a207a">${counts.backordered} backordered</div>`:''}
+  `;
+}
+
+// ── EXPORT CSV ────────────────────────────────────────────────────────────
+function exportOrderCSV(){
+  const STATUS_LABELS={not_ordered:'Not Ordered',ordered:'Ordered',in_transit:'In Transit',delivered:'Delivered',backordered:'Backordered'};
+  const headers=['#','Category','Room/Location','Product','Vendor','SKU','Qty','Unit Cost','Total','Status','PO#','Vendor Contact','Order Date','Exp. Delivery','Notes'];
+  const rows = ALL_ITEMS.map((item,i)=>{
+    const o=state.order[item.id]||{};
+    return [i+1,item.cat,item.room,item.name,item.vendor,item.sku,item.qty,item.unit,item.total?'$'+item.total.toFixed(2):'—',STATUS_LABELS[o.status||'not_ordered'],o.po||'',o.contact||'',o.order_date||'',o.exp_delivery||'',o.notes||''];
+  });
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='HAV_McKinney_OrderTracking.csv'; a.click();
+}
+
+// ── APPROVAL (cards) ─────────────────────────────────────────────────────
+function setApproval(id, val){
+  const current = state.approvals[id];
+  state.approvals[id] = current===val ? null : val;
+  saveState();
+  const card=document.getElementById('card-'+id);
+  card.classList.toggle('approved', state.approvals[id]==='approved');
+  card.classList.toggle('flagged', state.approvals[id]==='flagged');
+  const ov=document.getElementById('overlay-'+id);
+  if(ov){ ov.textContent=state.approvals[id]==='approved'?'✓ Approved':state.approvals[id]==='flagged'?'⚑ Flagged':''; }
+  updateTotals();
+}
+
+function setListApproval(id, val){
+  const current = state.approvals[id];
+  state.approvals[id] = current===val ? null : val;
+  saveState();
+  const card=document.getElementById('lcard-'+id);
+  if(card){
+    card.classList.toggle('approved', state.approvals[id]==='approved');
+    card.classList.toggle('flagged', state.approvals[id]==='flagged');
+  }
+}
+
+// ── TOGGLES ──────────────────────────────────────────────────────────────
+function toggleCard(id){
+  state.checked[id]=!state.checked[id]; saveState();
+  document.getElementById('card-'+id).classList.toggle('checked',state.checked[id]);
+  updateTotals();
+}
+function toggleRow(id){
+  state.checked[id]=!state.checked[id]; saveState();
+  const row=document.getElementById('row-'+id);
+  row.classList.toggle('checked-row',state.checked[id]);
+  const btn=row.querySelector('.row-check-btn');
+  btn.classList.toggle('checked-btn',state.checked[id]);
+}
+function toggleListItem(id){
+  state.checked[id]=!state.checked[id]; saveState();
+  document.getElementById('lcard-'+id).classList.toggle('checked',state.checked[id]);
+}
+function toggleEdit(id){
+  const panel=document.getElementById('edit-'+id);
+  if(panel) panel.classList.toggle('open');
+}
+function toggleNotes(id){
+  const body=document.getElementById('notes-'+id);
+  const toggle=document.getElementById('toggle-'+id);
+  const isOpen=body.classList.toggle('open');
+  toggle.classList.toggle('open',isOpen);
+  if(isOpen) body.querySelector('textarea').focus();
+}
+function toggleListNotes(id){
+  document.getElementById('lnotes-'+id)?.classList.toggle('open');
+}
+
+// ── NOTES ────────────────────────────────────────────────────────────────
+function saveNote(id,val){
+  state.notes[id]=val; saveState();
+  const toggle=document.getElementById('toggle-'+id)||document.getElementById('ltoggle-'+id);
+  if(toggle){
+    toggle.classList.toggle('has-note',val.trim().length>0);
+    const sp=toggle.querySelector('span:not(.toggle-arrow):not(.note-dot)');
+    if(sp && toggle.id.startsWith('ltoggle-')) sp.textContent=val.trim()?'📝 '+val.substring(0,60)+(val.length>60?'…':''):'Add note / question';
+  }
+}
+
+// ── PHOTO UPLOAD ──────────────────────────────────────────────────────────
+function triggerUpload(id){ document.getElementById('upload-'+id)?.click(); }
+function handleUpload(id, input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=e.target.result;
+    state.photos[id]=data; saveState();
+    const img=document.getElementById('img-'+id);
+    const ph=document.getElementById('ph-'+id);
+    if(img){ img.src=data; img.style.display='block'; }
+    if(ph) ph.style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── SQFT UPDATE ───────────────────────────────────────────────────────────
+function updateSqft(id,val){
+  const el=document.getElementById('sqft-'+id);
+  if(el && val) el.textContent=parseFloat(val).toLocaleString()+' sqft';
+}
+
+// ── ADD ITEM (stub) ───────────────────────────────────────────────────────
+function addItem(section){
+  alert('Add Item for '+section+' — connect to Supabase to enable persistent item creation across all users.');
+}
+
+// ── TOTALS ────────────────────────────────────────────────────────────────
+function updateTotals(){
+  const role=state.role||'designer';
+  const allIds=Object.keys(COST_ITEMS);
+  let confirmedCost=0, label='confirmed';
+  if(role==='client'){
+    confirmedCost=allIds.filter(id=>state.approvals[id]==='approved').reduce((s,id)=>s+COST_ITEMS[id],0);
+    label='approved';
+  } else {
+    confirmedCost=allIds.filter(id=>state.checked[id]).reduce((s,id)=>s+COST_ITEMS[id],0);
+  }
+  const remaining=TOTAL_COST-confirmedCost;
+  const count=role==='client'?allIds.filter(id=>state.approvals[id]==='approved').length:allIds.filter(id=>state.checked[id]).length;
+  const pct=allIds.length?(count/allIds.length)*100:0;
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=`${count} / ${allIds.length} ${label}`;
+  document.getElementById('pillConfirmed').textContent=`✓ $${confirmedCost.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  document.getElementById('pillRemaining').textContent=`Remaining: $${remaining.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  document.getElementById('pillTotal').textContent=`Total: $${TOTAL_COST.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+function init(){
+  renderList(WALL_ITEMS,'list-walltile');
+  renderList(PAINT_ITEMS,'list-paint');
+  renderList(EQUIP_ITEMS,'list-equipment');
+  renderList(LIGHT_ITEMS,'list-lighting');
+
+  // Restore role
+  const r = state.role || 'designer';
+  document.body.dataset.role = r;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.toggle('active',t.dataset.r===r));
+  if(r==='order') renderOrderTable();
+
+  // Restore checked cards
+  Object.keys(COST_ITEMS).forEach(id=>{
+    if(state.checked[id]) document.getElementById('card-'+id)?.classList.add('checked');
+    if(state.approvals[id]==='approved'){ document.getElementById('card-'+id)?.classList.add('approved'); const ov=document.getElementById('overlay-'+id); if(ov) ov.textContent='✓ Approved'; }
+    if(state.approvals[id]==='flagged'){ document.getElementById('card-'+id)?.classList.add('flagged'); const ov=document.getElementById('overlay-'+id); if(ov) ov.textContent='⚑ Flagged'; }
+    if(state.notes[id]){
+      const ta=document.querySelector('#notes-'+id+' textarea');
+      if(ta) ta.value=state.notes[id];
+      const tg=document.getElementById('toggle-'+id);
+      if(tg) tg.classList.add('has-note');
+    }
+    if(state.photos[id]){
+      const img=document.getElementById('img-'+id);
+      const ph=document.getElementById('ph-'+id);
+      if(img){ img.src=state.photos[id]; img.style.display='block'; }
+      if(ph) ph.style.display='none';
+    }
+  });
+
+  // Restore row checks
+  ['lobby','hallway','salon1','salon2','shampooroom','office'].forEach(id=>{
+    if(state.checked[id]){
+      document.getElementById('row-'+id)?.classList.add('checked-row');
+      document.getElementById('row-'+id)?.querySelector('.row-check-btn')?.classList.add('checked-btn');
+    }
+  });
+
+  updateTotals();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hair Salon McKinney — Purchasing Schedule</title>
+<style>
+  @page { margin: 0.65in 0.75in; size: letter; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #1a1a1a;
+    font-size: 10px;
+    line-height: 1.4;
+    background: #fff;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    border-bottom: 3px solid #1a1a1a;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .doc-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .doc-header .subtitle {
+    font-size: 11px;
+    color: #555;
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+  .doc-header .meta {
+    text-align: right;
+    font-size: 9px;
+    color: #555;
+    line-height: 1.8;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 6px 10px;
+    margin: 18px 0 10px;
+  }
+  .section-title.light {
+    background: #e8e4de;
+    color: #1a1a1a;
+    margin-top: 12px;
+  }
+
+  /* ── PRODUCT CARDS ── */
+  .product-card {
+    display: flex;
+    border: 1px solid #d0ccc6;
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+    background: #fafaf8;
+  }
+  .product-img-wrap {
+    width: 160px;
+    min-width: 160px;
+    height: 160px;
+    overflow: hidden;
+    background: #e8e4de;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .product-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .product-img-wrap .img-fallback {
+    font-size: 9px;
+    color: #888;
+    text-align: center;
+    padding: 10px;
+  }
+  .product-body {
+    flex: 1;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .product-name {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .product-brand {
+    font-size: 9px;
+    color: #666;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .product-meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .meta-box {
+    background: #fff;
+    border: 1px solid #d0ccc6;
+    padding: 5px 7px;
+  }
+  .meta-box .label {
+    font-size: 7.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #888;
+    margin-bottom: 2px;
+  }
+  .meta-box .value {
+    font-size: 10px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  .product-qty-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .qty-box {
+    flex: 1;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  .qty-box.accent {
+    background: #5a7a3a;
+  }
+  .qty-box .ql { font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.7; }
+  .qty-box .qv { font-size: 13px; font-weight: 700; }
+  .product-url {
+    font-size: 7.5px;
+    color: #888;
+    margin-top: 6px;
+    word-break: break-all;
+  }
+  .product-url a { color: #5a7a3a; }
+  .deviation-badge {
+    display: inline-block;
+    background: #c8440a;
+    color: #fff;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 2px 6px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .kept-badge {
+    display: inline-block;
+    background: #555;
+    color: #fff;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 2px 6px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  /* ── HARDWOOD TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    font-size: 9.5px;
+  }
+  thead th {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 8.5px;
+  }
+  tbody tr:nth-child(even) { background: #f5f4f0; }
+  tbody tr:hover { background: #eeeae3; }
+  tbody td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #e0dbd4;
+  }
+  tbody td.num { text-align: right; }
+  .total-row td {
+    background: #e8e4de;
+    font-weight: 700;
+    font-size: 10px;
+    border-top: 2px solid #1a1a1a;
+  }
+
+  /* ── COST SUMMARY ── */
+  .cost-summary {
+    margin-top: 18px;
+    page-break-inside: avoid;
+  }
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 12px;
+    border-bottom: 1px solid #e0dbd4;
+    font-size: 10px;
+  }
+  .cost-row:nth-child(even) { background: #f8f7f4; }
+  .cost-row .cost-label { color: #444; }
+  .cost-row .cost-val { font-weight: 600; }
+  .cost-grand {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── SUPPLEMENTAL ITEMS TABLE ── */
+  .supp-table th { background: #555; }
+  .supp-table td { font-size: 9px; vertical-align: top; }
+
+  /* ── NOTES & FOOTER ── */
+  .notes-box {
+    border: 1px solid #d0ccc6;
+    padding: 10px 12px;
+    margin-top: 14px;
+    background: #fafaf8;
+    font-size: 9px;
+    line-height: 1.7;
+    page-break-inside: avoid;
+  }
+  .notes-box strong { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; }
+
+  .doc-footer {
+    border-top: 1px solid #ccc;
+    margin-top: 18px;
+    padding-top: 8px;
+    font-size: 8px;
+    color: #999;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .page-break { page-break-before: always; }
+
+  @media print {
+    body { font-size: 9.5px; }
+    .product-card { break-inside: avoid; }
+    table { break-inside: auto; }
+    tr { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ HEADER -->
+<div class="doc-header">
+  <div>
+    <h1>Hair Salon McKinney</h1>
+    <div class="subtitle">Purchasing &amp; Materials Confirmation Schedule</div>
+  </div>
+  <div class="meta">
+    <div><strong>Date:</strong> May 11, 2026</div>
+    <div><strong>Client:</strong> Devon</div>
+    <div><strong>Designer:</strong> Caitlin (HAV)</div>
+    <div><strong>Doc:</strong> HAV_McKinney_v2_Devon</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ SECTION 1: FLOOR TILE -->
+<div class="section-title">Flooring — Tile &amp; Stone (Devon Selections)</div>
+
+<!-- BATHROOM 1 -->
+<div class="product-card">
+  <div class="product-img-wrap">
+    <img src="https://i8.amplience.net/i/flooranddecor/101488112" alt="Capri Almond Matte Porcelain" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div class="img-fallback" style="display:none">Capri Almond<br>Matte Porcelain<br>Floor &amp; Decor</div>
+  </div>
+  <div class="product-body">
+    <div>
+      <div class="deviation-badge">Devon Substitution</div>
+      <div class="product-name">Capri Almond Matte Porcelain Tile</div>
+      <div class="product-brand">Floor &amp; Decor &nbsp;|&nbsp; SKU: 101488112</div>
+      <div class="product-meta">
+        <div class="meta-box"><div class="label">Location</div><div class="value">Bathroom 1</div></div>
+        <div class="meta-box"><div class="label">Tile Size</div><div class="value">24" × 24"</div></div>
+        <div class="meta-box"><div class="label">Finish</div><div class="value">Matte</div></div>
+        <div class="meta-box"><div class="label">Sqft / Piece</div><div class="value">4.0 sqft</div></div>
+      </div>
+    </div>
+    <div class="product-qty-row">
+      <div class="qty-box"><div class="ql">Room Sqft</div><div class="qv">90</div></div>
+      <div class="qty-box"><div class="ql">+ 15% Overage</div><div class="qv">103.5</div></div>
+      <div class="qty-box"><div class="ql">Pieces Needed</div><div class="qv">26</div></div>
+      <div class="qty-box"><div class="ql">Price / Piece</div><div class="qv">$13.16</div></div>
+      <div class="qty-box accent"><div class="ql">Total Cost</div><div class="qv">$342.16</div></div>
+    </div>
+    <div class="product-url">Replaces: Tilebar Santo Mountain Beige 24×48 &nbsp;|&nbsp; <a href="https://www.flooranddecor.com/porcelain-tile/capri-almond-matte-porcelain-tile-101488112.html">flooranddecor.com › 101488112</a></div>
+  </div>
+</div>
+
+<!-- BATHROOM 2 -->
+<div class="product-card">
+  <div class="product-img-wrap">
+    <img src="https://images.thdstatic.com/productImages/c96e8244-c54c-4eb7-8c74-e72c825940dc/svn/octagon-nieve-with-taco-grafito-merola-tile-porcelain-tile-kvv8olnvgf-64_600.jpg" alt="Merola Laverton Octagon">
+  </div>
+  <div class="product-body">
+    <div>
+      <div class="deviation-badge">Devon Substitution</div>
+      <div class="product-name">Laverton Octagon Nieve with Taco Grafito</div>
+      <div class="product-brand">Merola Tile &nbsp;|&nbsp; Home Depot &nbsp;|&nbsp; Model: KVV8OLNVGF &nbsp;|&nbsp; Internet #335997641</div>
+      <div class="product-meta">
+        <div class="meta-box"><div class="label">Location</div><div class="value">Bathroom 2</div></div>
+        <div class="meta-box"><div class="label">Tile Size</div><div class="value">8" × 8"</div></div>
+        <div class="meta-box"><div class="label">Finish</div><div class="value">Matte</div></div>
+        <div class="meta-box"><div class="label">Sqft / Case</div><div class="value">11.25 sqft</div></div>
+      </div>
+    </div>
+    <div class="product-qty-row">
+      <div class="qty-box"><div class="ql">Room Sqft</div><div class="qv">110</div></div>
+      <div class="qty-box"><div class="ql">+ 15% Overage</div><div class="qv">126.5</div></div>
+      <div class="qty-box"><div class="ql">Cases Needed</div><div class="qv">12</div></div>
+      <div class="qty-box"><div class="ql">Price / Case</div><div class="qv">$184.91</div></div>
+      <div class="qty-box accent"><div class="ql">Total Cost</div><div class="qv">$2,218.92</div></div>
+    </div>
+    <div class="product-url">Replaces: Tilebar Santo Mountain Beige 24×48 &nbsp;|&nbsp; <a href="https://www.homedepot.com/p/335997641">homedepot.com › 335997641</a></div>
+  </div>
+</div>
+
+<!-- KITCHEN + UTILITY -->
+<div class="product-card">
+  <div class="product-img-wrap">
+    <img src="https://images.thdstatic.com/productImages/f4f1af7e-d57f-4f52-b0f3-5979c95817a9/svn/villa-bianca-msi-porcelain-tile-nwglatblo1717-64_600.jpg" alt="MSI Villa Bianca Checkerboard">
+  </div>
+  <div class="product-body">
+    <div>
+      <div class="deviation-badge">Devon Substitution</div>
+      <div class="product-name">Villa Bianca 17×17 Matte Porcelain — Checkerboard Look</div>
+      <div class="product-brand">MSI &nbsp;|&nbsp; Home Depot &nbsp;|&nbsp; Model: NWGLATBLO1717 &nbsp;|&nbsp; Internet #340079451</div>
+      <div class="product-meta">
+        <div class="meta-box"><div class="label">Location</div><div class="value">Kitchen + Utility</div></div>
+        <div class="meta-box"><div class="label">Tile Size</div><div class="value">17" × 17"</div></div>
+        <div class="meta-box"><div class="label">Finish</div><div class="value">Matte</div></div>
+        <div class="meta-box"><div class="label">Sqft / Case</div><div class="value">14.8 sqft</div></div>
+      </div>
+    </div>
+    <div class="product-qty-row">
+      <div class="qty-box"><div class="ql">Room Sqft</div><div class="qv">230</div></div>
+      <div class="qty-box"><div class="ql">+ 15% Overage</div><div class="qv">264.5</div></div>
+      <div class="qty-box"><div class="ql">Cases Needed</div><div class="qv">18</div></div>
+      <div class="qty-box"><div class="ql">Price / Case</div><div class="qv">$73.56 ★</div></div>
+      <div class="qty-box accent"><div class="ql">Total Cost</div><div class="qv">$1,324.08</div></div>
+    </div>
+    <div class="product-url">★ Special Buy — was $5.82/sqft ($86.10/case) &nbsp;|&nbsp; Replaces: Dekton Kraftizen floor &nbsp;|&nbsp; <a href="https://www.homedepot.com/p/340079451">homedepot.com › 340079451</a></div>
+  </div>
+</div>
+
+<!-- SHAMPOO CHAIR MOSAIC -->
+<div class="product-card">
+  <div class="product-img-wrap">
+    <img src="https://assets.wfcdn.com/im/16431951/resize-h800-p1-w800%5Ecompr-r85/2289/228984614/12.6%22+x+7.28%22+Marble+Mosaic+Sheet+Subway+Wall+%26+Floor+Tile.jpg" alt="Marble Fan Mosaic">
+  </div>
+  <div class="product-body">
+    <div>
+      <div class="deviation-badge">Devon Substitution</div>
+      <div class="product-name">12.6" × 7.28" Marble Fan Mosaic Sheet</div>
+      <div class="product-brand">Marble Online &nbsp;|&nbsp; Wayfair &nbsp;|&nbsp; SKU: IRBL1422</div>
+      <div class="product-meta">
+        <div class="meta-box"><div class="label">Location</div><div class="value">Under Shampoo Chairs</div></div>
+        <div class="meta-box"><div class="label">Piece Size</div><div class="value">320mm × 185mm</div></div>
+        <div class="meta-box"><div class="label">Material</div><div class="value">Marble</div></div>
+        <div class="meta-box"><div class="label">Sqft / Piece</div><div class="value">0.34 sqft</div></div>
+      </div>
+    </div>
+    <div class="product-qty-row">
+      <div class="qty-box"><div class="ql">Area Sqft (9×12.5)</div><div class="qv">112.5</div></div>
+      <div class="qty-box"><div class="ql">+ 15% Overage</div><div class="qv">129.4</div></div>
+      <div class="qty-box"><div class="ql">Pieces Needed</div><div class="qv">381</div></div>
+      <div class="qty-box"><div class="ql">Price / Piece</div><div class="qv">$40.12</div></div>
+      <div class="qty-box accent"><div class="ql">Total Cost</div><div class="qv">$15,285.72</div></div>
+    </div>
+    <div class="product-url">Replaces: Daltile Cascade Ridge Slate Penny Round &nbsp;|&nbsp; <a href="https://www.wayfair.com/home-improvement/pdp/marble-online-126-x-728-marble-mosaic-sheet-subway-wall-floor-tile-irbl1422.html">wayfair.com › IRBL1422</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ SECTION 2: HARDWOOD -->
+<div class="section-title">Flooring — Engineered Hardwood (All Hardwood Areas)</div>
+
+<!-- HARDWOOD PRODUCT CARD -->
+<div class="product-card">
+  <div class="product-img-wrap">
+    <img src="https://admflooring.com/wp-content/uploads/2018/01/Ragusa-3.png" alt="ADM Ragusa White Oak">
+  </div>
+  <div class="product-body">
+    <div>
+      <div class="kept-badge">Per Original Spec</div>
+      <div class="product-name">Ragusa — White Oak Engineered Hardwood Pattern Flooring</div>
+      <div class="product-brand">ADM Flooring &nbsp;|&nbsp; Monza Collection &nbsp;|&nbsp; SKU: RAGUSA</div>
+      <div class="product-meta">
+        <div class="meta-box"><div class="label">Panel Size</div><div class="value">31½" sq.</div></div>
+        <div class="meta-box"><div class="label">Finish</div><div class="value">Oil</div></div>
+        <div class="meta-box"><div class="label">Price / Sqft</div><div class="value">$11.99</div></div>
+        <div class="meta-box"><div class="label">Price / Box</div><div class="value">$165.22</div></div>
+      </div>
+    </div>
+    <div class="product-qty-row">
+      <div class="qty-box"><div class="ql">Total Room Sqft</div><div class="qv">1,408.5</div></div>
+      <div class="qty-box"><div class="ql">+ 15% Overage</div><div class="qv">1,619.8</div></div>
+      <div class="qty-box"><div class="ql">Sqft / Box</div><div class="qv">13.78</div></div>
+      <div class="qty-box"><div class="ql">Total Boxes</div><div class="qv">121</div></div>
+      <div class="qty-box accent"><div class="ql">Total Cost</div><div class="qv">$19,991.62</div></div>
+    </div>
+    <div class="product-url"><a href="https://admflooring.com/ragusa-white-oak-engineered-hardwood/">admflooring.com › ragusa-white-oak-engineered-hardwood</a> &nbsp;|&nbsp; Free delivery on 37+ boxes &nbsp;|&nbsp; Pick-up discount: $11.29/sqft</div>
+  </div>
+</div>
+
+<!-- HARDWOOD ROOM BREAKDOWN -->
+<table>
+  <thead>
+    <tr>
+      <th>Room</th>
+      <th class="num">Room Sqft</th>
+      <th class="num">+ 15% Overage</th>
+      <th class="num">Sqft / Box</th>
+      <th class="num">Boxes</th>
+      <th class="num">Cost @ $165.22/box</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Lobby</td><td class="num">320</td><td class="num">368.0</td><td class="num">13.78</td><td class="num">27</td><td class="num">$4,460.94</td></tr>
+    <tr><td>Hallway</td><td class="num">252</td><td class="num">289.8</td><td class="num">13.78</td><td class="num">22</td><td class="num">$3,634.84</td></tr>
+    <tr><td>Salon Room 1</td><td class="num">256</td><td class="num">294.4</td><td class="num">13.78</td><td class="num">22</td><td class="num">$3,634.84</td></tr>
+    <tr><td>Salon Room 2</td><td class="num">221</td><td class="num">254.2</td><td class="num">13.78</td><td class="num">19</td><td class="num">$3,139.18</td></tr>
+    <tr><td>Shampoo Room (excl. mosaic area)</td><td class="num">119.5</td><td class="num">137.4</td><td class="num">13.78</td><td class="num">10</td><td class="num">$1,652.20</td></tr>
+    <tr><td>Office</td><td class="num">250</td><td class="num">287.5</td><td class="num">13.78</td><td class="num">21</td><td class="num">$3,469.62</td></tr>
+    <tr class="total-row"><td><strong>TOTAL — ADM Ragusa</strong></td><td class="num"><strong>1,408.5</strong></td><td class="num"><strong>1,619.8</strong></td><td class="num">13.78</td><td class="num"><strong>121 boxes</strong></td><td class="num"><strong>$19,991.62</strong></td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════ COST SUMMARY -->
+<div class="section-title">Flooring Cost Summary</div>
+<div class="cost-summary">
+  <div class="cost-row"><span class="cost-label">Bathroom 1 — F&amp;D Capri Almond (26 pcs)</span><span class="cost-val">$342.16</span></div>
+  <div class="cost-row"><span class="cost-label">Bathroom 2 — Merola Laverton Octagon (12 cases)</span><span class="cost-val">$2,218.92</span></div>
+  <div class="cost-row"><span class="cost-label">Kitchen + Utility — MSI Villa Bianca (18 cases)</span><span class="cost-val">$1,324.08</span></div>
+  <div class="cost-row"><span class="cost-label">Under Shampoo Chairs — Marble Fan Mosaic (381 pcs)</span><span class="cost-val">$15,285.72</span></div>
+  <div class="cost-row" style="font-weight:600;background:#f0ede6"><span class="cost-label">Subtotal — Tile</span><span class="cost-val">$19,170.88</span></div>
+  <div class="cost-row"><span class="cost-label">Hardwood — ADM Ragusa (121 boxes, 6 rooms)</span><span class="cost-val">$19,991.62</span></div>
+  <div class="cost-grand"><span>TOTAL FLOORING MATERIALS</span><span>$39,162.50</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ PAGE BREAK -->
+<div class="page-break"></div>
+
+<!-- ═══════════════════════════════════════════════ SECTION 3: WALL TILE & SURFACES -->
+<div class="doc-header" style="margin-top:0">
+  <div>
+    <h1>Hair Salon McKinney</h1>
+    <div class="subtitle">Purchasing Schedule — Page 2: Wall Tile, Surfaces, Paint, Equipment &amp; Lighting</div>
+  </div>
+  <div class="meta">
+    <div><strong>Date:</strong> May 11, 2026</div>
+    <div><strong>Doc:</strong> HAV_McKinney_v2_Devon</div>
+  </div>
+</div>
+
+<div class="section-title">Wall Tile &amp; Surfaces (Caitlin Spec — Per Original Schedule)</div>
+
+<table class="supp-table">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>SKU / Model</th>
+      <th>Manufacturer</th>
+      <th>Vendor</th>
+      <th>Size / Spec</th>
+      <th>Finish</th>
+      <th>Location</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Microsaic Plaid Wooden Beige Polished Marble Tile</td>
+      <td>—</td>
+      <td>Tilebar</td>
+      <td>Tilebar</td>
+      <td>12.2" × 12.2"</td>
+      <td>Polished</td>
+      <td>Bathroom 1 — Wall</td>
+      <td>1 wall OR halfway up all walls — confirm scope</td>
+    </tr>
+    <tr>
+      <td>Laticrete Permacolor Bright White Grout</td>
+      <td>—</td>
+      <td>Laticrete</td>
+      <td>Laticrete</td>
+      <td>—</td>
+      <td>—</td>
+      <td>Bathroom 1 — Wall grout</td>
+      <td>For marble wall tile</td>
+    </tr>
+    <tr>
+      <td>Masso Pearl Manufactured Stone</td>
+      <td>101233351</td>
+      <td>Floor &amp; Decor</td>
+      <td>Floor &amp; Decor</td>
+      <td>—</td>
+      <td>Heavily Overgrouted</td>
+      <td>Salon Room Built-Ins</td>
+      <td>Per Caitlin spec — qty TBD by GC</td>
+    </tr>
+    <tr>
+      <td>Laticrete Permacolor Marble Beige Grout</td>
+      <td>100895416</td>
+      <td>Floor &amp; Decor</td>
+      <td>Floor &amp; Decor</td>
+      <td>—</td>
+      <td>Heavily Overgrouted</td>
+      <td>Salon Room Built-Ins</td>
+      <td>Paired with Masso Pearl stone</td>
+    </tr>
+    <tr>
+      <td>Trevi Dekton — Pietra Edition</td>
+      <td>—</td>
+      <td>Dekton</td>
+      <td>Cosentino</td>
+      <td>—</td>
+      <td>Matte</td>
+      <td>Devyn Salon &amp; Salon 2 — Surfaces</td>
+      <td>Countertops / built-in surfaces only — NOT floor</td>
+    </tr>
+    <tr>
+      <td>Kraftizen Albarium Dekton</td>
+      <td>—</td>
+      <td>Dekton</td>
+      <td>Cosentino</td>
+      <td>—</td>
+      <td>—</td>
+      <td>Kitchen — Surfaces</td>
+      <td>Confirm scope with designer</td>
+    </tr>
+    <tr>
+      <td>Gracious Landscape Anthracite Mural</td>
+      <td>1 panel</td>
+      <td>Belarte Studio</td>
+      <td>Belarte Studio</td>
+      <td>—</td>
+      <td>—</td>
+      <td>Lobby — 1 Accent Wall</td>
+      <td>1 full mural panel</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════ PAINT -->
+<div class="section-title light">Paint — Meoded Limewash (Via General Contractor)</div>
+
+<table class="supp-table">
+  <thead>
+    <tr>
+      <th>Color Name</th>
+      <th>Color Code</th>
+      <th>Manufacturer</th>
+      <th>Application</th>
+      <th>Rooms</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Cocoa Limewash</td>
+      <td>MC-833</td>
+      <td>Meoded</td>
+      <td>Color Drench — Ceiling, Walls &amp; Baseboards</td>
+      <td>Main Bathroom (Bathroom 1), Bathroom 2</td>
+    </tr>
+    <tr>
+      <td>Cumulous Limewash</td>
+      <td>MC-721</td>
+      <td>Meoded</td>
+      <td>Color Drench — Ceiling, Walls &amp; Baseboards</td>
+      <td>Lobby, Hallway, Kitchen, Office</td>
+    </tr>
+    <tr>
+      <td>Villa Limewash</td>
+      <td>MC-Villa ⚠</td>
+      <td>Meoded</td>
+      <td>Color Drench — Ceiling, Walls &amp; Baseboards</td>
+      <td>Devyn Salon, Salon 2, Shampoo Room</td>
+    </tr>
+  </tbody>
+</table>
+<div class="notes-box" style="margin-top:4px;margin-bottom:10px;font-size:8.5px;">⚠ <strong>Villa Limewash color code incomplete in original schedule</strong> — confirm exact MC code with Caitlin before ordering.</div>
+
+<!-- ═══════════════════════════════════════════════ EQUIPMENT -->
+<div class="section-title light">Salon Equipment</div>
+
+<table class="supp-table">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>SKU</th>
+      <th>Vendor</th>
+      <th>Size / Footprint</th>
+      <th>Finish / Color</th>
+      <th>Location</th>
+      <th>Qty</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Avant Shampoo System with Black Bowl (Ottoman Included)</td>
+      <td>5869maB</td>
+      <td>Minerva Beauty</td>
+      <td>25"W × 55.5"D × 34"H</td>
+      <td>Mocha</td>
+      <td>Shampoo Room</td>
+      <td style="font-weight:700;text-align:center">3</td>
+    </tr>
+    <tr>
+      <td>Murano Extra Wide Salon Styling Chair — 360° Swivel Hydraulic</td>
+      <td>2861br-mbp-3s-b</td>
+      <td>Minerva Beauty</td>
+      <td>29"W × 37"D</td>
+      <td>Bark Brown / Black Powder Coat</td>
+      <td>Salon Rooms</td>
+      <td style="font-weight:700;text-align:center">4</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════ LIGHTING -->
+<div class="section-title light">Lighting</div>
+
+<table class="supp-table">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Vendor / Source</th>
+      <th>Size</th>
+      <th>Finish</th>
+      <th>Bulb</th>
+      <th>Location</th>
+      <th>Qty</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Aldwin Pendant</td>
+      <td>Soho Home</td>
+      <td>H47.2" × W27.6" × D27.6"</td>
+      <td>—</td>
+      <td>6 × E12 / Tala 6W Globe LED / 110–120V</td>
+      <td>TBD — confirm with designer</td>
+      <td style="font-weight:700;text-align:center">1</td>
+    </tr>
+    <tr>
+      <td>Brass Chain Swag Chandelier — White Glass Globe</td>
+      <td>Hangout Lighting (Etsy)</td>
+      <td>Globes: 10" / 12" / 14" mixed</td>
+      <td>Brass chain</td>
+      <td>5 lights</td>
+      <td>Shampoo Room</td>
+      <td style="font-weight:700;text-align:center">1</td>
+    </tr>
+    <tr>
+      <td>Mid-Century Sconce — Antique Brass &amp; Cream Shade</td>
+      <td>MODCREATION Studio (Etsy)</td>
+      <td>—</td>
+      <td>Antique Brass</td>
+      <td>—</td>
+      <td>Devyn Salon Built-In</td>
+      <td style="font-weight:700;text-align:center">2</td>
+    </tr>
+    <tr>
+      <td>Alabaster Wall Sconce with Brass Arm</td>
+      <td>Brilliance Lightings (Etsy)</td>
+      <td>—</td>
+      <td>Antique Brass</td>
+      <td>—</td>
+      <td>Salon 2 Built-In</td>
+      <td style="font-weight:700;text-align:center">2</td>
+    </tr>
+    <tr>
+      <td>Modern Brass Double Wall Sconce — Vanity</td>
+      <td>The Italian Light Store (Etsy)</td>
+      <td>—</td>
+      <td>Raw Brass</td>
+      <td>—</td>
+      <td>Main Bathroom</td>
+      <td style="font-weight:700;text-align:center">1</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════ NOTES -->
+<div class="notes-box">
+  <strong>Open Items &amp; Action Notes</strong><br><br>
+  1. <strong>Bathroom 1 Tile Image:</strong> F&amp;D Capri Almond — confirm image loads on printed copy (amplience CDN); if not, verify visually at flooranddecor.com › SKU 101488112.<br>
+  2. <strong>Villa Bianca on Special Buy:</strong> Price $4.97/sqft ($73.56/case) — was $5.82/sqft. Confirm price lock before placing order.<br>
+  3. <strong>Meoded Villa Limewash:</strong> Color code incomplete in Caitlin's original file — confirm exact MC code before GC purchase.<br>
+  4. <strong>Wall Tile Scope — Bathroom 1:</strong> Tilebar Microsaic Marble — confirm whether 1 wall only or halfway up all walls.<br>
+  5. <strong>Dekton — Kitchen &amp; Salon Surfaces:</strong> Countertop/surface scope to be confirmed with designer Caitlin. Dekton is NOT specified for any floor.<br>
+  6. <strong>ADM Shipping:</strong> Free delivery on 37+ boxes. Ordering 121 boxes qualifies. Pick-up discounted price: $11.29/sqft ($155.58/box).<br>
+  7. <strong>Mosaic under shampoo chairs:</strong> Fan/scallop marble mosaic (0.34 sqft/piece). Confirmed by Devon. Layout should be planned with installer before tile order is finalized.
+</div>
+
+<!-- ═══════════════════════════════════════════════ FOOTER -->
+<div class="doc-footer">
+  <span>HAV — Hair Salon McKinney | Purchasing Schedule v2 (Devon Revisions) | May 11, 2026</span>
+  <span>All quantities include 15% overage for cuts and waste. Prices reflect current vendor listings — verify before purchase.</span>
+</div>
+
+</body>
+</html>
