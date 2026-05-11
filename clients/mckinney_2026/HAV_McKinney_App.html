@@ -134,6 +134,16 @@ body{font-family:'Inter','Helvetica Neue',Arial,sans-serif;background:var(--bg);
 .edit-field input:focus{outline:none;border-color:var(--green)}
 .photo-upload-area{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px dashed var(--border);border-radius:5px;cursor:pointer;font-size:11px;color:var(--muted);transition:all .15s}
 .photo-upload-area:hover{border-color:var(--green);color:var(--green)}
+.photo-upload-area.drag-over{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.card-img-placeholder.drag-over{background:#d8ead0}
+.card-img-wrap.drag-over{outline:2.5px dashed var(--green);outline-offset:-3px}
+.list-upload-zone.drag-over{background:#d8ead0}
+/* ── LIST ITEM EDIT PANEL ── */
+.list-edit-btn{display:none;margin-left:auto;padding:3px 9px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border:1px solid var(--border);border-radius:3px;background:#fff;cursor:pointer;color:var(--muted);flex-shrink:0;align-self:center}
+.list-edit-btn:hover{border-color:var(--green);color:var(--green)}
+[data-role="designer"] .list-edit-btn{display:block}
+.list-edit-panel{display:none;padding:10px 14px 14px;background:#fafaf8;border-top:1px solid var(--border);flex-direction:column;gap:8px}
+.list-edit-panel.open{display:flex}
 .edit-save-btn{padding:6px 14px;background:var(--green);color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
 
 /* ── HARDWOOD TABLE ── */
@@ -225,6 +235,55 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
 /* Order: show order table, hide card view */
 [data-role="order"] .card-view-wrap{display:none}
 [data-role="order"] .order-view{display:block}
+/* Rooms pivot view */
+.role-tab.active[data-r="rooms"]{background:#7a5229;color:#fff;border-color:#7a5229}
+.room-view{display:none}
+[data-role="rooms"] .card-view-wrap{display:none}
+[data-role="rooms"] .order-view{display:none}
+[data-role="rooms"] .room-view{display:block}
+.room-view-inner{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+.room-view-header{margin-bottom:20px}
+.room-view-header h2{font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.room-view-header p{color:var(--muted);font-size:11px;margin-top:3px}
+.room-block{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.room-block-header{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;background:var(--black);color:#fff;user-select:none}
+.room-block-header:hover{background:#222}
+.room-block-arrow{font-size:9px;color:#888;width:10px;flex-shrink:0}
+.room-block-name{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;flex:1}
+.room-block-count{font-size:9px;color:#666;white-space:nowrap}
+.room-add-btn{margin-left:8px;padding:3px 9px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,.2);border-radius:3px;background:transparent;color:#999;cursor:pointer;letter-spacing:.5px;transition:all .15s}
+.room-add-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.4)}
+.room-cat-group{padding:0 16px}
+.room-cat-group+.room-cat-group{padding-top:4px}
+.room-cat-group:first-child .room-cat-label{padding-top:10px}
+.room-cat-group:last-child{padding-bottom:10px}
+.room-cat-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:6px 0 3px;border-bottom:1px solid var(--border);margin-bottom:2px}
+.room-row{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid #f5f3ef;cursor:pointer;transition:background .1s;border-radius:3px}
+.room-row:last-child{border-bottom:none}
+.room-row:hover{background:#f8f6f2;margin:0 -8px;padding:6px 8px}
+.room-row.rchecked .rr-name,.room-row.rchecked .rr-brand{opacity:.45;text-decoration:line-through}
+.room-row.rapproved{background:#f0f6e8}
+.room-row.rflagged{background:#fff5f0}
+.rr-check{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.rr-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid #ccc;transition:all .15s;flex-shrink:0}
+.rr-dot-on{background:var(--green)!important;border-color:var(--green)!important}
+.rr-thumb{width:32px;height:32px;object-fit:cover;border-radius:3px;flex-shrink:0}
+.rr-thumb-empty{width:32px;height:32px;background:#ede9e3;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.rr-info{flex:1;min-width:0}
+.rr-name{font-size:11px;font-weight:500;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rr-brand{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.rr-note{font-size:9px;color:#c04020;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rr-cost{font-size:11px;font-weight:600;color:var(--black);white-space:nowrap;flex-shrink:0;min-width:56px;text-align:right}
+.rr-link{font-size:9px;color:var(--blue);text-decoration:none;flex-shrink:0;white-space:nowrap}
+.rr-link:hover{text-decoration:underline}
+.room-add-form{padding:12px 16px 14px;background:#fafaf8;border-top:1px solid var(--border)}
+.room-add-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;margin-bottom:6px}
+.radd-input{padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:11px;font-family:inherit;width:100%;background:#fff}
+.radd-input:focus{outline:none;border-color:var(--green)}
+.radd-save-btn{margin-top:6px;padding:6px 14px;background:var(--green);color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:.3px}
+.radd-save-btn:hover{background:#3d6823}
+.radd-cancel{margin-left:8px;font-size:10px;color:var(--muted);cursor:pointer;background:none;border:none;padding:0}
+.radd-cancel:hover{color:var(--black)}
 </style>
 </head>
 <body data-role="designer">
@@ -236,6 +295,7 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
     <button class="role-tab active" data-r="designer" onclick="setRole('designer')">✏ Designer</button>
     <button class="role-tab" data-r="client" onclick="setRole('client')">👁 Client</button>
     <button class="role-tab" data-r="order" onclick="setRole('order')">📦 Order</button>
+    <button class="role-tab" data-r="rooms" onclick="setRole('rooms')">🏠 Rooms</button>
   </div>
   <div class="progress-wrap">
     <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:0%"></div></div>
@@ -257,7 +317,7 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
   <div class="section-header">
     <h2>Flooring — Tile &amp; Stone</h2>
     <div class="line"></div>
-    <div class="section-badge">Devon substitutions</div>
+    <div class="section-badge">Devyn substitutions</div>
     <button class="section-add-btn" onclick="addItem('tile')">+ Add Item</button>
   </div>
 
@@ -275,7 +335,7 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
       </div>
       <div class="card-img-wrap" id="imgwrap-bath1">
         <img class="card-img" id="img-bath1" src="" alt="Capri Almond" style="display:none" onerror="this.style.display='none';document.getElementById('ph-bath1').style.display='flex'">
-        <div class="card-img-placeholder" id="ph-bath1" onclick="triggerUpload('bath1')">
+        <div class="card-img-placeholder" id="ph-bath1" onclick="triggerUpload('bath1')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'bath1')">
           <svg width="22" height="22" fill="none" stroke="#bbb" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
           <span>Tap to upload photo</span>
           <span class="photo-upload-hint">Designer only</span>
@@ -285,7 +345,7 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
       <div class="card-content">
         <div class="card-top">
           <div>
-            <span class="badge badge-sub">Devon Substitution</span>
+            <span class="badge badge-sub">Devyn Substitution</span>
             <div class="card-name">Capri Almond Matte Porcelain Tile</div>
             <div class="card-brand">Floor &amp; Decor &nbsp;·&nbsp; SKU: 101488112 &nbsp;·&nbsp; Bathroom 1</div>
           </div>
@@ -315,7 +375,7 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
         <div class="edit-field"><label>Cases / Units Needed</label><input type="text" placeholder="26 pcs"></div>
         <div class="edit-field"><label>Total Cost</label><input type="text" placeholder="$342.16"></div>
       </div>
-      <div class="photo-upload-area" onclick="triggerUpload('bath1')">
+      <div class="photo-upload-area" onclick="triggerUpload('bath1')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'bath1')"
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Upload product photo (saved locally)
       </div>
@@ -340,13 +400,13 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
         <button class="approve-btn" onclick="setApproval('bath2','approved')">✓ OK</button>
         <button class="flag-btn" onclick="setApproval('bath2','flagged')">⚑ Flag</button>
       </div>
-      <div class="card-img-wrap">
-        <img class="card-img" src="https://images.thdstatic.com/productImages/c96e8244-c54c-4eb7-8c74-e72c825940dc/svn/octagon-nieve-with-taco-grafito-merola-tile-porcelain-tile-kvv8olnvgf-64_600.jpg" alt="Merola Octagon">
+      <div class="card-img-wrap" id="imgwrap-bath2" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'bath2')">
+        <img class="card-img" id="img-bath2" src="https://images.thdstatic.com/productImages/c96e8244-c54c-4eb7-8c74-e72c825940dc/svn/octagon-nieve-with-taco-grafito-merola-tile-porcelain-tile-kvv8olnvgf-64_600.jpg" alt="Merola Octagon">
       </div>
       <div class="card-content">
         <div class="card-top">
           <div>
-            <span class="badge badge-sub">Devon Substitution</span>
+            <span class="badge badge-sub">Devyn Substitution</span>
             <div class="card-name">Laverton Octagon Nieve with Taco Grafito</div>
             <div class="card-brand">Merola Tile &nbsp;·&nbsp; Home Depot &nbsp;·&nbsp; KVV8OLNVGF &nbsp;·&nbsp; Bathroom 2</div>
           </div>
@@ -367,10 +427,20 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
     <div class="edit-panel" id="edit-bath2">
       <div class="edit-row">
         <div class="edit-field"><label>Room Sqft</label><input type="number" id="ef-sqft-bath2" placeholder="110" oninput="updateSqft('bath2',this.value)"></div>
-        <div class="edit-field"><label>Unit Price</label><input type="text" placeholder="$16.44/sqft"></div>
-        <div class="edit-field"><label>Cases Needed</label><input type="text" placeholder="12 cases"></div>
+        <div class="edit-field"><label>Vendor</label><input type="text" placeholder="Home Depot"></div>
+        <div class="edit-field"><label>SKU / Product #</label><input type="text" placeholder="KVV8OLNVGF"></div>
         <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
       </div>
+      <div class="edit-row">
+        <div class="edit-field"><label>Unit Price</label><input type="text" placeholder="$16.44/sqft"></div>
+        <div class="edit-field"><label>Cases / Units Needed</label><input type="text" placeholder="12 cases"></div>
+        <div class="edit-field"><label>Total Cost</label><input type="text" placeholder="$2,218.92"></div>
+      </div>
+      <div class="photo-upload-area" onclick="triggerUpload('bath2')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'bath2')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload / replace product photo — click or drag
+      </div>
+      <input class="photo-upload-input" id="upload-bath2" type="file" accept="image/*" onchange="handleUpload('bath2',this)">
     </div>
     <div class="card-notes-toggle" id="toggle-bath2" onclick="toggleNotes('bath2')">
       <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
@@ -392,13 +462,13 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
         <button class="approve-btn" onclick="setApproval('kitchen','approved')">✓ OK</button>
         <button class="flag-btn" onclick="setApproval('kitchen','flagged')">⚑ Flag</button>
       </div>
-      <div class="card-img-wrap">
-        <img class="card-img" src="https://images.thdstatic.com/productImages/f4f1af7e-d57f-4f52-b0f3-5979c95817a9/svn/villa-bianca-msi-porcelain-tile-nwglatblo1717-64_600.jpg" alt="MSI Villa Bianca">
+      <div class="card-img-wrap" id="imgwrap-kitchen" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'kitchen')">
+        <img class="card-img" id="img-kitchen" src="https://images.thdstatic.com/productImages/f4f1af7e-d57f-4f52-b0f3-5979c95817a9/svn/villa-bianca-msi-porcelain-tile-nwglatblo1717-64_600.jpg" alt="MSI Villa Bianca">
       </div>
       <div class="card-content">
         <div class="card-top">
           <div>
-            <span class="badge badge-sub">Devon Substitution</span>
+            <span class="badge badge-sub">Devyn Substitution</span>
             <div class="card-name">Villa Bianca 17×17 Matte Porcelain Checkerboard</div>
             <div class="card-brand">MSI &nbsp;·&nbsp; Home Depot &nbsp;·&nbsp; 340079451 &nbsp;·&nbsp; Kitchen + Utility Room</div>
           </div>
@@ -413,16 +483,26 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
           <span class="spec-pill"><strong>Unit price:</strong> $4.97/sqft ★</span>
           <span class="sqft-edit-pill" onclick="toggleEdit('kitchen')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit sqft</span>
         </div>
-        <div class="card-link">Devon sub — replaces Dekton Kraftizen &nbsp;|&nbsp; <a href="https://www.homedepot.com/p/340079451" target="_blank">homedepot.com › 340079451</a></div>
+        <div class="card-link">Devyn sub — replaces Dekton Kraftizen &nbsp;|&nbsp; <a href="https://www.homedepot.com/p/340079451" target="_blank">homedepot.com › 340079451</a></div>
       </div>
     </div>
     <div class="edit-panel" id="edit-kitchen">
       <div class="edit-row">
         <div class="edit-field"><label>Room Sqft</label><input type="number" id="ef-sqft-kitchen" placeholder="230" oninput="updateSqft('kitchen',this.value)"></div>
-        <div class="edit-field"><label>Unit Price</label><input type="text" placeholder="$4.97/sqft"></div>
-        <div class="edit-field"><label>Cases Needed</label><input type="text" placeholder="18 cases"></div>
+        <div class="edit-field"><label>Vendor</label><input type="text" placeholder="Home Depot"></div>
+        <div class="edit-field"><label>SKU / Product #</label><input type="text" placeholder="340079451"></div>
         <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
       </div>
+      <div class="edit-row">
+        <div class="edit-field"><label>Unit Price</label><input type="text" placeholder="$4.97/sqft"></div>
+        <div class="edit-field"><label>Cases / Units Needed</label><input type="text" placeholder="18 cases"></div>
+        <div class="edit-field"><label>Total Cost</label><input type="text" placeholder="$1,324.08"></div>
+      </div>
+      <div class="photo-upload-area" onclick="triggerUpload('kitchen')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'kitchen')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload / replace product photo — click or drag
+      </div>
+      <input class="photo-upload-input" id="upload-kitchen" type="file" accept="image/*" onchange="handleUpload('kitchen',this)">
     </div>
     <div class="card-notes-toggle" id="toggle-kitchen" onclick="toggleNotes('kitchen')">
       <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
@@ -444,13 +524,13 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
         <button class="approve-btn" onclick="setApproval('shampoo','approved')">✓ OK</button>
         <button class="flag-btn" onclick="setApproval('shampoo','flagged')">⚑ Flag</button>
       </div>
-      <div class="card-img-wrap">
-        <img class="card-img" src="https://assets.wfcdn.com/im/09209484/resize-h800-w800%5Ecompr-r85/2192/219234040/default_name.jpg" alt="Marble Fan Mosaic" onerror="this.style.display='none'">
+      <div class="card-img-wrap" id="imgwrap-shampoo" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'shampoo')">
+        <img class="card-img" id="img-shampoo" src="https://assets.wfcdn.com/im/09209484/resize-h800-w800%5Ecompr-r85/2192/219234040/default_name.jpg" alt="Marble Fan Mosaic" onerror="this.style.display='none'">
       </div>
       <div class="card-content">
         <div class="card-top">
           <div>
-            <span class="badge badge-sub">Devon Substitution</span>
+            <span class="badge badge-sub">Devyn Substitution</span>
             <div class="card-name">12.6" × 7.28" Marble Fan Mosaic Sheet</div>
             <div class="card-brand">Marble Online &nbsp;·&nbsp; Wayfair &nbsp;·&nbsp; IRBL1422 &nbsp;·&nbsp; Shampoo Room Under Chairs</div>
           </div>
@@ -465,16 +545,26 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
           <span class="spec-pill"><strong>Unit price:</strong> $40.12/pc</span>
           <span class="sqft-edit-pill" onclick="toggleEdit('shampoo')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit sqft</span>
         </div>
-        <div class="card-link">Devon sub — replaces Daltile Cascade Ridge penny round &nbsp;|&nbsp; <a href="https://www.wayfair.com/home-improvement/pdp/marble-online-126-x-728-marble-mosaic-sheet-subway-wall-floor-tile-irbl1422.html" target="_blank">wayfair.com › IRBL1422</a></div>
+        <div class="card-link">Devyn sub — replaces Daltile Cascade Ridge penny round &nbsp;|&nbsp; <a href="https://www.wayfair.com/home-improvement/pdp/marble-online-126-x-728-marble-mosaic-sheet-subway-wall-floor-tile-irbl1422.html" target="_blank">wayfair.com › IRBL1422</a></div>
       </div>
     </div>
     <div class="edit-panel" id="edit-shampoo">
       <div class="edit-row">
         <div class="edit-field"><label>Area Sqft</label><input type="number" id="ef-sqft-shampoo" placeholder="112.5" oninput="updateSqft('shampoo',this.value)"></div>
-        <div class="edit-field"><label>Unit Price / Piece</label><input type="text" placeholder="$40.12/pc"></div>
-        <div class="edit-field"><label>Pieces Needed</label><input type="text" placeholder="381 pcs"></div>
+        <div class="edit-field"><label>Vendor</label><input type="text" placeholder="Wayfair / Marble Online"></div>
+        <div class="edit-field"><label>SKU / Product #</label><input type="text" placeholder="IRBL1422"></div>
         <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
       </div>
+      <div class="edit-row">
+        <div class="edit-field"><label>Unit Price / Piece</label><input type="text" placeholder="$40.12/pc"></div>
+        <div class="edit-field"><label>Pieces Needed</label><input type="text" placeholder="381 pcs"></div>
+        <div class="edit-field"><label>Total Cost</label><input type="text" placeholder="$15,285.72"></div>
+      </div>
+      <div class="photo-upload-area" onclick="triggerUpload('shampoo')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'shampoo')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload / replace product photo — click or drag
+      </div>
+      <input class="photo-upload-input" id="upload-shampoo" type="file" accept="image/*" onchange="handleUpload('shampoo',this)">
     </div>
     <div class="card-notes-toggle" id="toggle-shampoo" onclick="toggleNotes('shampoo')">
       <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
@@ -502,8 +592,8 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
         <button class="approve-btn" onclick="setApproval('adm','approved')">✓ OK</button>
         <button class="flag-btn" onclick="setApproval('adm','flagged')">⚑ Flag</button>
       </div>
-      <div class="card-img-wrap">
-        <img class="card-img" src="https://admflooring.com/wp-content/uploads/2022/07/RAGUSA-1.jpg" alt="ADM Ragusa" onerror="this.style.display='none'">
+      <div class="card-img-wrap" id="imgwrap-adm" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'adm')">
+        <img class="card-img" id="img-adm" src="https://admflooring.com/wp-content/uploads/2022/07/RAGUSA-1.jpg" alt="ADM Ragusa" onerror="this.style.display='none'">
       </div>
       <div class="card-content">
         <div class="card-top">
@@ -526,10 +616,21 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
     </div>
     <div class="edit-panel" id="edit-adm">
       <div class="edit-row">
-        <div class="edit-field"><label>Price / Box</label><input type="text" placeholder="$165.22"></div>
-        <div class="edit-field"><label>Sqft / Box</label><input type="text" placeholder="13.78"></div>
+        <div class="edit-field"><label>Vendor</label><input type="text" placeholder="ADM Flooring"></div>
+        <div class="edit-field"><label>SKU / Product #</label><input type="text" placeholder="RAGUSA"></div>
         <div class="edit-field"><label>Product Link</label><input type="url" placeholder="https://..."></div>
       </div>
+      <div class="edit-row">
+        <div class="edit-field"><label>Price / Box</label><input type="text" placeholder="$165.22"></div>
+        <div class="edit-field"><label>Sqft / Box</label><input type="text" placeholder="13.78"></div>
+        <div class="edit-field"><label>Boxes Needed</label><input type="text" placeholder="121 boxes"></div>
+        <div class="edit-field"><label>Total Cost</label><input type="text" placeholder="$19,991.62"></div>
+      </div>
+      <div class="photo-upload-area" onclick="triggerUpload('adm')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'adm')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload / replace product photo — click or drag
+      </div>
+      <input class="photo-upload-input" id="upload-adm" type="file" accept="image/*" onchange="handleUpload('adm',this)">
     </div>
     <div class="card-notes-toggle" id="toggle-adm" onclick="toggleNotes('adm')">
       <div class="note-dot"></div><span>Add note / question</span><span class="toggle-arrow">▼</span>
@@ -623,6 +724,9 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
   </div>
 </div>
 
+<!-- ══ ROOM PIVOT VIEW ══ -->
+<div class="room-view" id="room-view"></div>
+
 </div><!-- /container -->
 
 <script>
@@ -661,34 +765,36 @@ const COST_ITEMS = {bath1:342.16,bath2:2218.92,kitchen:1324.08,shampoo:15285.72,
 const TOTAL_COST = Object.values(COST_ITEMS).reduce((a,b)=>a+b,0);
 
 const WALL_ITEMS = [
-  {id:'w1',name:'Microsaic Plaid Wooden Beige Polished Marble Tile',brand:'Tilebar · Tilebar',meta:'12.2"×12.2" · Polished',location:'Bathroom 1 — Wall',note:'1 wall OR halfway up all walls — confirm scope with Caitlin'},
-  {id:'w2',name:'Laticrete Permacolor Bright White Grout',brand:'Laticrete',meta:'—',location:'Bathroom 1 — Grout',note:'Per Caitlin spec'},
-  {id:'w3',name:'Masso Pearl Manufactured Stone',brand:'Floor & Decor · SKU: 101233351',meta:'Heavily Overgrouted',location:'Salon Room Built-Ins',note:'Per Caitlin spec'},
-  {id:'w4',name:'Laticrete Permacolor Marble Beige Grout',brand:'Floor & Decor · SKU: 100895416',meta:'Heavily Overgrouted',location:'Salon Room Built-Ins Grout',note:'Per Caitlin spec'},
-  {id:'w5',name:'Trevi Dekton — Pietra Edition',brand:'Dekton · Cosentino',meta:'Matte',location:'Devyn Salon & Salon 2 — Surfaces (NOT floor)',note:''},
-  {id:'w6',name:'Kraftizen Albarium Dekton',brand:'Dekton · Cosentino',meta:'—',location:'Kitchen — Surfaces',note:'Confirm scope with designer'},
-  {id:'w7',name:'Gracious Landscape Anthracite Mural',brand:'Belarte Studio · 1 panel',meta:'—',location:'Lobby — 1 Accent Wall',note:''},
+  {id:'w1',name:'Microsaic Plaid Wooden Beige Polished Marble Tile',brand:'Tilebar · Tilebar',meta:'12.2"×12.2" · Polished',location:'Bathroom 1 — Wall',note:'1 wall OR halfway up all walls — confirm scope with Caitlin',img:'',link:'https://www.designshop.com/sample/300033252-100462809/tilebar-microsaic-plaid-marble-mosaic-tile-wooden-beige'},
+  {id:'w2',name:'Laticrete Permacolor Bright White Grout',brand:'Laticrete',meta:'—',location:'Bathroom 1 — Grout',note:'Per Caitlin spec',img:'',link:'https://www.flooranddecor.com/tile-grout-installation-materials/laticrete-44-bright-white-permacolor-grout-100895705.html'},
+  {id:'w3',name:'Masso Pearl Manufactured Stone',brand:'Floor & Decor · SKU: 101233351',meta:'Heavily Overgrouted',location:'Salon Room Built-Ins',note:'Per Caitlin spec',img:'https://i8.amplience.net/i/flooranddecor/101233351_masso-pearl-manufactured-stone_display',link:'https://www.flooranddecor.com/ledgers-stone/masso-pearl-manufactured-stone-101233351.html'},
+  {id:'w4',name:'Laticrete Permacolor Marble Beige Grout',brand:'Floor & Decor · SKU: 100895416',meta:'Heavily Overgrouted',location:'Salon Room Built-Ins Grout',note:'Per Caitlin spec',img:'https://i8.amplience.net/i/flooranddecor/100895416_laticrete-17-marble-beige-permacolor-grout_1',link:'https://www.flooranddecor.com/tile-grout-installation-materials/laticrete-17-marble-beige-permacolor-grout-100895416.html'},
+  {id:'w5',name:'Trevi Dekton — Pietra Edition',brand:'Dekton · Cosentino',meta:'Matte',location:'Devyn Salon & Salon 2 — Surfaces (NOT floor)',note:'',img:'https://assetstools.cosentino.com/api/v1/bynder/image/3176BDAD-CA08-4850-ADBC62A18FB5DD3C/dekton-pietra-edition-exterior-trevi-polar.jpg',link:'https://www.cosentino.com/colors/dekton/trevi/'},
+  {id:'w6',name:'Kraftizen Albarium Dekton',brand:'Dekton · Cosentino',meta:'—',location:'Kitchen — Surfaces',note:'Confirm scope with designer — color details TBD',img:'',link:'https://www.cosentino.com/colors/dekton/albarium/'},
+  {id:'w7',name:'Gracious Landscape Anthracite Mural',brand:'Belarte Studio · 1 panel',meta:'—',location:'Lobby — 1 Accent Wall',note:'',img:'https://belartestudio.com/cdn/shop/files/GraciousFolklore-GraciousLandscape-BAS09709011-Anthracite-4.jpg',link:'https://belartestudio.com/collections/landscape-wall-murals/products/gracious-landscape-anthracite-swedish-grace'},
 ];
 const PAINT_ITEMS = [
-  {id:'p1',name:'Cocoa Limewash',brand:'Meoded · MC-833',meta:'Color Drench',location:'Bathroom 1 + Bathroom 2',note:'Ceiling + walls + baseboards'},
-  {id:'p2',name:'Cumulous Limewash',brand:'Meoded · MC-721',meta:'Color Drench',location:'Lobby, Hallway, Kitchen, Office',note:'Ceiling + walls + baseboards'},
-  {id:'p3',name:'Villa Limewash ⚠ Code incomplete',brand:'Meoded · MC-Villa',meta:'Color Drench',location:'Devyn Salon, Salon 2, Shampoo Room',note:'⚠ Confirm exact MC color code with Caitlin before ordering'},
+  {id:'p1',name:'Cocoa Limewash',brand:'Meoded · MC-833',meta:'Color Drench',location:'Bathroom 1 + Bathroom 2',note:'Ceiling + walls + baseboards',link:'https://meodedpaint.com/product/lime-wash/'},
+  {id:'p2',name:'Cumulous Limewash',brand:'Meoded · MC-721',meta:'Color Drench',location:'Lobby, Hallway, Kitchen, Office',note:'Ceiling + walls + baseboards',link:'https://meodedpaint.com/product/lime-wash/'},
+  {id:'p3',name:'Villa Limewash ⚠ Code incomplete',brand:'Meoded · MC-Villa',meta:'Color Drench',location:'Devyn Salon, Salon 2, Shampoo Room',note:'⚠ Confirm exact MC color code with Caitlin before ordering',link:'https://meodedpaint.com/product/lime-wash/'},
 ];
 const EQUIP_ITEMS = [
-  {id:'e1',name:'Avant Shampoo System with Black Bowl (Ottoman Incl.)',brand:'Minerva Beauty · 5869maB',meta:'25"W×55.5"D×34"H · Mocha',location:'Shampoo Room · Qty: 3',note:'Flexible drain hose: 1.25"W × 27.5"L'},
-  {id:'e2',name:'Murano Extra Wide Salon Styling Chair — 360° Swivel',brand:'Minerva Beauty · 2861br-mbp-3s-b',meta:'29"W×37"D · Bark Brown / Black',location:'Salon Rooms · Qty: 4',note:''},
+  {id:'e1',name:'Avant Shampoo System with Black Bowl (Ottoman Incl.)',brand:'Minerva Beauty · 5869maB',meta:'25"W×55.5"D×34"H · Mocha · Qty: 3',location:'Shampoo Room · Qty: 3',note:'Flexible drain hose: 1.25"W × 27.5"L',link:'https://www.minervabeauty.com/product/avant-shampoo-system-with-black-bowl'},
+  {id:'e2',name:'Murano Extra Wide Salon Styling Chair — 360° Swivel',brand:'Minerva Beauty · 2861br-mbp-3s-b',meta:'29"W×37"D · Bark Brown / Black · Qty: 4',location:'Salon Rooms · Qty: 4',note:'',link:'https://www.minervabeauty.com/product/minerva-murano-styling-chair/'},
 ];
 const LIGHT_ITEMS = [
-  {id:'l1',name:'Aldwin Pendant',brand:'Soho Home',meta:'H47.2"×W27.6" · 6×E12 / Tala 6W Globe LED',location:'TBD — confirm with designer · Qty: 1',note:''},
-  {id:'l2',name:'Brass Chain Swag Chandelier — White Glass Globe',brand:'Hangout Lighting · Etsy',meta:'Globes: 10"/12"/14" · Brass chain · 5 lights',location:'Shampoo Room · Qty: 1',note:''},
-  {id:'l3',name:'Mid-Century Sconce — Antique Brass & Cream Shade',brand:'MODCREATION Studio · Etsy',meta:'Antique Brass',location:'Devyn Salon Built-In · Qty: 2',note:''},
-  {id:'l4',name:'Alabaster Wall Sconce with Brass Arm',brand:'Brilliance Lightings · Etsy',meta:'Antique Brass',location:'Salon 2 Built-In · Qty: 2',note:''},
-  {id:'l5',name:'Modern Brass Double Wall Sconce — Vanity',brand:'The Italian Light Store · Etsy',meta:'Raw Brass',location:'Main Bathroom · Qty: 1',note:''},
+  {id:'l1',name:'Aldwin Pendant',brand:'Soho Home',meta:'H47.2"×W27.6" · 6×E12 / Tala 6W Globe LED · 110-120V',location:'TBD — confirm with designer · Qty: 1',note:'2" ceiling rose · confirm location with Caitlin',link:'https://www.sohohome.com/us/products/aldwin-pendant'},
+  {id:'l2',name:'Brass Chain Swag Chandelier — White Glass Globe',brand:'Hangout Lighting · Etsy',meta:'Globes: 10"/12"/14" · Brass chain · 5 lights',location:'Shampoo Room · Qty: 1',note:'',link:'https://www.etsy.com/listing/1661242144/chandelier-brass-chain-swag-chandelier'},
+  {id:'l3',name:'Mid-Century Sconce — Antique Brass & Cream Shade',brand:'MODCREATION Studio · Etsy',meta:'Antique Brass',location:'Devyn Salon Built-In · Qty: 2',note:'',link:'https://www.etsy.com/listing/4403098139/sconce-light-mid-century-sconce'},
+  {id:'l4',name:'Alabaster Wall Sconce with Brass Arm',brand:'Brilliance Lightings · Etsy',meta:'Antique Brass',location:'Salon 2 Built-In · Qty: 2',note:'',link:'https://www.etsy.com/listing/4338376325/alabaster-wall-sconce-with-brass-arm'},
+  {id:'l5',name:'Modern Brass Double Wall Sconce — Vanity',brand:'The Italian Light Store · Etsy',meta:'Raw Brass',location:'Main Bathroom · Qty: 1',note:'',link:'https://www.etsy.com/listing/4442818019/modern-brass-double-wall-sconce-vanity'},
 ];
 
 // ── STATE ───────────────────────────────────────────────────────────────
 const KEY = 'mck_state_v2';
-let state = JSON.parse(localStorage.getItem(KEY) || '{"role":"designer","checked":{},"notes":{},"approvals":{},"order":{},"photos":{}}');
+let state = JSON.parse(localStorage.getItem(KEY) || '{"role":"designer","checked":{},"notes":{},"approvals":{},"order":{},"photos":{},"itemEdits":{},"customRoomItems":{}}');
+if(!state.itemEdits) state.itemEdits={};
+if(!state.customRoomItems) state.customRoomItems={};
 function saveState(){localStorage.setItem(KEY,JSON.stringify(state))}
 
 // ── ROLE ────────────────────────────────────────────────────────────────
@@ -697,30 +803,54 @@ function setRole(r){
   document.body.dataset.role=r;
   document.querySelectorAll('.role-tab').forEach(t=>t.classList.toggle('active',t.dataset.r===r));
   if(r==='order') renderOrderTable();
+  if(r==='rooms') renderRoomView();
   updateTotals();
 }
 
 // ── RENDER LIST ITEMS ────────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 function renderList(items, containerId){
   const c=document.getElementById(containerId);
-  c.innerHTML=items.map(item=>`
-    <div class="list-item${state.checked[item.id]?' checked':''}${state.approvals[item.id]==='approved'?' approved':state.approvals[item.id]==='flagged'?' flagged':''}" id="lcard-${item.id}" style="position:relative">
+  c.innerHTML=items.map(item=>{
+    const ed = state.itemEdits[item.id]||{};
+    const name     = ed.name     !== undefined ? ed.name     : item.name;
+    const brand    = ed.brand    !== undefined ? ed.brand    : item.brand;
+    const meta     = ed.meta     !== undefined ? ed.meta     : item.meta;
+    const location = ed.location !== undefined ? ed.location : item.location;
+    const note     = ed.note     !== undefined ? ed.note     : (item.note||'');
+    const link     = ed.link     !== undefined ? ed.link     : (item.link||'');
+
+    const photoSrc = state.photos[item.id] || item.img || '';
+    const imgHtml = photoSrc
+      ? `<img src="${esc(photoSrc)}" alt="${esc(name)}" style="width:68px;min-width:68px;height:68px;object-fit:cover;border-right:1px solid var(--border);display:block;cursor:pointer" title="Drop a new photo to replace" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'${item.id}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : '';
+    const uploadHtml = `<div class="list-upload-zone" style="width:68px;min-width:68px;height:68px;background:#f0ede8;border-right:1px solid var(--border);display:${photoSrc?'none':'flex'};flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-size:8px;color:#bbb;text-align:center;padding:4px" onclick="triggerListUpload('${item.id}')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'${item.id}')">
+      <svg width="16" height="16" fill="none" stroke="#ccc" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+      <span class="list-photo-hint">Add photo</span>
+    </div>`;
+    const checked = state.checked[item.id];
+    const approval = state.approvals[item.id];
+    return `
+    <div class="list-item${checked?' checked':''}${approval==='approved'?' approved':approval==='flagged'?' flagged':''}" id="lcard-${item.id}" style="position:relative">
       <div class="list-item-main">
         <div class="list-check" onclick="toggleListItem('${item.id}')">
-          <div class="check-circle${state.checked[item.id]?' style=background:#4a7a2a;border-color:#4a7a2a':''}">
-            ${state.checked[item.id]?'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+          <div class="check-circle${checked?' style=background:#4a7a2a;border-color:#4a7a2a':''}">
+            ${checked?'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
           </div>
         </div>
         <div class="list-client-actions">
           <button class="approve-btn" onclick="setListApproval('${item.id}','approved')">✓ OK</button>
           <button class="flag-btn" onclick="setListApproval('${item.id}','flagged')">⚑ Flag</button>
         </div>
+        ${imgHtml}${uploadHtml}
         <div class="list-content">
-          <div><div class="lc-name">${item.name}</div><div class="lc-meta">${item.brand}</div></div>
-          <div class="lc-meta">${item.meta}</div>
-          <div class="lc-meta">${item.location}</div>
-          <div class="lc-meta" style="color:#c04020">${item.note||''}</div>
+          <div><div class="lc-name" id="lname-${item.id}">${esc(name)}</div><div class="lc-meta" id="lbrand-${item.id}">${esc(brand)}</div></div>
+          <div class="lc-meta" id="lmeta-${item.id}">${esc(meta)}</div>
+          <div class="lc-meta" id="lloc-${item.id}">${esc(location)}</div>
+          <div class="lc-meta" id="lnote-${item.id}" style="color:#c04020">${esc(note)}</div>
+          ${link?`<div class="lc-meta"><a href="${esc(link)}" target="_blank" style="color:var(--blue);font-size:9px">${esc(link.replace(/^https?:\/\//,'').split('/')[0])}</a></div>`:''}
         </div>
+        <button class="list-edit-btn" onclick="toggleListEdit('${item.id}')">✏ Edit</button>
       </div>
       <div class="list-notes-toggle${state.notes[item.id]?' has-note':''}" onclick="toggleListNotes('${item.id}')">
         <div class="note-dot"></div>
@@ -728,10 +858,283 @@ function renderList(items, containerId){
         <span class="toggle-arrow" style="margin-left:auto">▼</span>
       </div>
       <div class="list-notes-body${state.notes[item.id]?' open':''}" id="lnotes-${item.id}">
-        <textarea placeholder="Notes, questions, or follow-ups…" oninput="saveNote('${item.id}',this.value)">${state.notes[item.id]||''}</textarea>
+        <textarea placeholder="Notes, questions, or follow-ups…" oninput="saveNote('${item.id}',this.value)">${esc(state.notes[item.id]||'')}</textarea>
+      </div>
+      <div class="list-edit-panel" id="ledit-${item.id}">
+        <div class="edit-row">
+          <div class="edit-field"><label>Product Name</label><input type="text" value="${esc(name)}" oninput="saveItemEdit('${item.id}','name',this.value)"></div>
+          <div class="edit-field"><label>Brand / Vendor</label><input type="text" value="${esc(brand)}" oninput="saveItemEdit('${item.id}','brand',this.value)"></div>
+        </div>
+        <div class="edit-row">
+          <div class="edit-field"><label>Specs / Size / Finish</label><input type="text" value="${esc(meta)}" oninput="saveItemEdit('${item.id}','meta',this.value)"></div>
+          <div class="edit-field"><label>Room / Location</label><input type="text" value="${esc(location)}" oninput="saveItemEdit('${item.id}','location',this.value)"></div>
+        </div>
+        <div class="edit-row">
+          <div class="edit-field"><label>Note / Caution</label><input type="text" value="${esc(note)}" oninput="saveItemEdit('${item.id}','note',this.value)"></div>
+          <div class="edit-field"><label>Product Link</label><input type="url" value="${esc(link)}" placeholder="https://..." oninput="saveItemEdit('${item.id}','link',this.value)"></div>
+        </div>
+        <div class="photo-upload-area" onclick="triggerListUpload('${item.id}')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'${item.id}')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload / replace photo — click or drag
+        </div>
+        <input type="file" accept="image/*" id="lupload-${item.id}" style="display:none" onchange="handleListUpload('${item.id}',this)">
       </div>
     </div>
-  `).join('');
+  `}).join('');
+}
+
+// ── LIST ITEM PHOTO UPLOAD ────────────────────────────────────────────────
+function triggerListUpload(id){ document.getElementById('lupload-'+id)?.click(); }
+function handleListUpload(id, input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>applyPhoto(id,e.target.result);
+  reader.readAsDataURL(file);
+}
+
+// ── LIST ITEM EDITING ─────────────────────────────────────────────────────
+function toggleListEdit(id){
+  const panel=document.getElementById('ledit-'+id);
+  if(panel) panel.classList.toggle('open');
+}
+function saveItemEdit(id, field, val){
+  if(!state.itemEdits[id]) state.itemEdits[id]={};
+  state.itemEdits[id][field]=val;
+  saveState();
+  // Live update display text (no full re-render needed)
+  const map={name:'lname-'+id, brand:'lbrand-'+id, meta:'lmeta-'+id, location:'lloc-'+id, note:'lnote-'+id};
+  if(map[field]){ const el=document.getElementById(map[field]); if(el) el.textContent=val; }
+}
+
+// ── HIDE "Add photo" HINT in client/order role ───────────────────────────
+function updateListPhotoHints(){
+  const role=document.body.dataset.role||'designer';
+  document.querySelectorAll('.list-photo-hint').forEach(el=>{
+    el.closest('div[onclick]').style.pointerEvents = role==='designer' ? 'auto' : 'none';
+    el.style.display = role==='designer' ? 'block' : 'none';
+  });
+}
+
+// ── ROOM PIVOT VIEW ──────────────────────────────────────────────────────
+
+const ROOMS_MAP = [
+  {id:'bathroom1', name:'Bathroom 1', cats:[
+    {label:'Flooring — Tile',    items:['bath1']},
+    {label:'Wall Tile',          items:['w1']},
+    {label:'Grout',              items:['w2']},
+    {label:'Paint',              items:['p1']},
+    {label:'Lighting',           items:['l5']},
+  ]},
+  {id:'bathroom2', name:'Bathroom 2', cats:[
+    {label:'Flooring — Tile',    items:['bath2']},
+    {label:'Paint',              items:['p1']},
+  ]},
+  {id:'kitchen', name:'Kitchen + Utility', cats:[
+    {label:'Flooring — Tile',    items:['kitchen']},
+    {label:'Surfaces',           items:['w6']},
+    {label:'Paint',              items:['p2']},
+  ]},
+  {id:'shampoo', name:'Shampoo Room', cats:[
+    {label:'Flooring — Mosaic',  items:['shampoo']},
+    {label:'Flooring — Hardwood',items:['hw-shampoo']},
+    {label:'Paint',              items:['p3']},
+    {label:'Equipment',          items:['e1']},
+    {label:'Lighting',           items:['l2']},
+  ]},
+  {id:'salon1', name:'Devyn Salon — Room 1', cats:[
+    {label:'Flooring — Hardwood',items:['hw-salon1']},
+    {label:'Wall Stone / Built-Ins', items:['w3','w4']},
+    {label:'Surfaces',           items:['w5']},
+    {label:'Paint',              items:['p3']},
+    {label:'Equipment',          items:['e2']},
+    {label:'Lighting',           items:['l3']},
+  ]},
+  {id:'salon2', name:'Salon Room 2', cats:[
+    {label:'Flooring — Hardwood',items:['hw-salon2']},
+    {label:'Surfaces',           items:['w5']},
+    {label:'Paint',              items:['p3']},
+    {label:'Equipment',          items:['e2']},
+    {label:'Lighting',           items:['l4']},
+  ]},
+  {id:'lobby', name:'Lobby', cats:[
+    {label:'Flooring — Hardwood',items:['hw-lobby']},
+    {label:'Accent Wall',        items:['w7']},
+    {label:'Paint',              items:['p2']},
+    {label:'Lighting',           items:['l1']},
+  ]},
+  {id:'hallway', name:'Hallway', cats:[
+    {label:'Flooring — Hardwood',items:['hw-hallway']},
+    {label:'Paint',              items:['p2']},
+  ]},
+  {id:'office', name:'Office', cats:[
+    {label:'Flooring — Hardwood',items:['hw-office']},
+    {label:'Paint',              items:['p2']},
+  ]},
+];
+
+function getItemData(id){
+  const allItem = ALL_ITEMS.find(i=>i.id===id)||{};
+  const listItem = [...(window.WALL_ITEMS||[]),...(window.PAINT_ITEMS||[]),...(window.EQUIP_ITEMS||[]),...(window.LIGHT_ITEMS||[])].find(i=>i.id===id)||{};
+  const cardImgs = {
+    bath1:'', bath2:'https://images.thdstatic.com/productImages/c96e8244-c54c-4eb7-8c74-e72c825940dc/svn/octagon-nieve-with-taco-grafito-merola-tile-porcelain-tile-kvv8olnvgf-64_600.jpg',
+    kitchen:'https://images.thdstatic.com/productImages/f4f1af7e-d57f-4f52-b0f3-5979c95817a9/svn/villa-bianca-msi-porcelain-tile-nwglatblo1717-64_600.jpg',
+    shampoo:'https://assets.wfcdn.com/im/09209484/resize-h800-w800%5Ecompr-r85/2192/219234040/default_name.jpg',
+  };
+  const ed = (state.itemEdits&&state.itemEdits[id])||{};
+  return {
+    name:    ed.name  || listItem.name  || allItem.name  || id,
+    brand:   ed.brand || listItem.brand || allItem.vendor || '—',
+    qty:     allItem.qty  || '—',
+    unit:    allItem.unit || '',
+    total:   allItem.total || null,
+    img:     state.photos[id] || listItem.img || cardImgs[id] || '',
+    link:    ed.link || '',
+    note:    ed.note !== undefined ? ed.note : (listItem.note||''),
+    checked: !!state.checked[id],
+    approval: state.approvals[id]||'',
+  };
+}
+
+function toggleRoomBlock(roomId){
+  const body=document.getElementById('rb-'+roomId);
+  const arrow=document.getElementById('rbarrow-'+roomId);
+  if(!body) return;
+  const open=body.style.display!=='none';
+  body.style.display=open?'none':'block';
+  if(arrow) arrow.textContent=open?'▶':'▼';
+}
+
+function toggleRoomAddForm(roomId){
+  const form=document.getElementById('radd-'+roomId);
+  if(form) form.style.display=form.style.display==='none'?'block':'none';
+}
+
+function saveCustomRoomItem(roomId){
+  const v=id=>document.getElementById(id)?.value||'';
+  const name=v('radd-name-'+roomId).trim();
+  if(!name){alert('Product name is required');return;}
+  const id='custom-'+Date.now();
+  if(!state.customRoomItems[roomId]) state.customRoomItems[roomId]=[];
+  state.customRoomItems[roomId].push({
+    id, name,
+    cat:    v('radd-cat-'+roomId)||'Other',
+    brand:  v('radd-brand-'+roomId),
+    qty:    v('radd-qty-'+roomId),
+    total:  parseFloat(v('radd-cost-'+roomId))||null,
+    link:   v('radd-link-'+roomId),
+    note:   v('radd-note-'+roomId),
+  });
+  saveState();
+  renderRoomView();
+}
+
+function toggleRoomCheck(id){
+  state.checked[id]=!state.checked[id]; saveState();
+  renderRoomView(); updateTotals();
+}
+
+function deleteCustomRoomItem(roomId,itemId){
+  if(!state.customRoomItems[roomId]) return;
+  state.customRoomItems[roomId]=state.customRoomItems[roomId].filter(i=>i.id!==itemId);
+  saveState(); renderRoomView();
+}
+
+function renderRoomRow(id){
+  const d=getItemData(id);
+  const thumb=d.img
+    ? `<img class="rr-thumb" src="${esc(d.img)}" onerror="this.style.display='none'">`
+    : `<div class="rr-thumb-empty"><svg width="12" height="12" fill="none" stroke="#ccc" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg></div>`;
+  const totalStr=d.total?'$'+d.total.toLocaleString('en-US',{minimumFractionDigits:2}):'—';
+  const qtyStr=[d.qty&&d.qty!=='—'?d.qty:'',d.unit&&d.unit!=='—'&&d.unit!=='Via GC'?d.unit:''].filter(Boolean).join(' · ');
+  const cls=['room-row',d.checked?'rchecked':'',d.approval==='approved'?'rapproved':d.approval==='flagged'?'rflagged':''].filter(Boolean).join(' ');
+  return `<div class="${cls}" onclick="toggleRoomCheck('${id}')">
+    <div class="rr-check"><div class="rr-dot${d.checked?' rr-dot-on':''}"></div></div>
+    ${thumb}
+    <div class="rr-info">
+      <div class="rr-name">${esc(d.name)}</div>
+      <div class="rr-brand">${esc(d.brand)}${qtyStr?' · '+esc(qtyStr):''}</div>
+      ${d.note?`<div class="rr-note">⚠ ${esc(d.note)}</div>`:''}
+    </div>
+    ${d.link?`<a class="rr-link" href="${esc(d.link)}" target="_blank" onclick="event.stopPropagation()">↗ link</a>`:''}
+    <div class="rr-cost">${totalStr}</div>
+  </div>`;
+}
+
+function renderRoomView(){
+  const container=document.getElementById('room-view');
+  if(!container) return;
+
+  const roomsHtml=ROOMS_MAP.map(room=>{
+    const catsHtml=room.cats.map(cat=>{
+      const rows=cat.items.map(renderRoomRow).join('');
+      return rows?`<div class="room-cat-group">
+        <div class="room-cat-label">${esc(cat.label)}</div>
+        ${rows}
+      </div>`:'';
+    }).join('');
+
+    const custom=(state.customRoomItems[room.id]||[]);
+    const customHtml=custom.length?`<div class="room-cat-group">
+      <div class="room-cat-label">Added Items</div>
+      ${custom.map(item=>{
+        const cls=['room-row',state.checked[item.id]?'rchecked':''].filter(Boolean).join(' ');
+        return `<div class="${cls}">
+          <div class="rr-check" onclick="event.stopPropagation();toggleRoomCheck('${item.id}')"><div class="rr-dot${state.checked[item.id]?' rr-dot-on':''}"></div></div>
+          <div class="rr-thumb-empty"></div>
+          <div class="rr-info">
+            <div class="rr-name">${esc(item.name)}</div>
+            <div class="rr-brand">${esc(item.brand||'')}${item.qty?' · '+esc(item.qty):''}</div>
+            ${item.note?`<div class="rr-note">${esc(item.note)}</div>`:''}
+          </div>
+          <span style="font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--bg);color:var(--muted);flex-shrink:0">${esc(item.cat)}</span>
+          ${item.link?`<a class="rr-link" href="${esc(item.link)}" target="_blank" onclick="event.stopPropagation()">↗</a>`:''}
+          <div class="rr-cost">${item.total?'$'+item.total.toLocaleString():'—'}</div>
+          <button onclick="event.stopPropagation();deleteCustomRoomItem('${room.id}','${item.id}')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:12px;padding:0 2px" title="Remove">✕</button>
+        </div>`;
+      }).join('')}
+    </div>`:'';
+
+    const totalItems=room.cats.reduce((n,c)=>n+c.items.length,0)+custom.length;
+
+    return `<div class="room-block">
+      <div class="room-block-header" onclick="toggleRoomBlock('${room.id}')">
+        <span id="rbarrow-${room.id}" class="room-block-arrow">▼</span>
+        <span class="room-block-name">${esc(room.name)}</span>
+        <span class="room-block-count">${totalItems} items</span>
+        <button class="room-add-btn" onclick="event.stopPropagation();toggleRoomAddForm('${room.id}')">+ Add item</button>
+      </div>
+      <div id="rb-${room.id}">
+        ${catsHtml}
+        ${customHtml}
+        <div class="room-add-form" id="radd-${room.id}" style="display:none">
+          <div class="room-add-grid">
+            <select id="radd-cat-${room.id}" class="radd-input">
+              <option>Flooring</option><option>Wall / Surface</option><option>Grout</option>
+              <option>Paint</option><option>Equipment</option><option>Lighting</option><option>Other</option>
+            </select>
+            <input id="radd-name-${room.id}" class="radd-input" type="text" placeholder="Product name *">
+            <input id="radd-brand-${room.id}" class="radd-input" type="text" placeholder="Brand / Vendor">
+            <input id="radd-qty-${room.id}" class="radd-input" type="text" placeholder="Qty / Units">
+            <input id="radd-cost-${room.id}" class="radd-input" type="number" placeholder="Total cost $">
+            <input id="radd-link-${room.id}" class="radd-input" type="url" placeholder="Product link">
+          </div>
+          <input id="radd-note-${room.id}" class="radd-input" type="text" placeholder="Note / caution" style="width:100%;margin-top:5px">
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+            <button class="radd-save-btn" onclick="saveCustomRoomItem('${room.id}')">Save Item</button>
+            <button class="radd-cancel" onclick="toggleRoomAddForm('${room.id}')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML=`<div class="room-view-inner">
+    <div class="room-view-header">
+      <h2>Room-by-Room View</h2>
+      <p>All materials organized by space · click any item to mark confirmed · + Add item to add custom line items</p>
+    </div>
+    ${roomsHtml}
+  </div>`;
 }
 
 // ── RENDER ORDER TABLE ────────────────────────────────────────────────────
@@ -749,7 +1152,7 @@ function renderOrderTable(){
         <td style="color:#999;font-size:10px">${rowNum}</td>
         <td style="font-size:10px;color:#666">${item.cat}</td>
         <td>${item.room}</td>
-        <td><strong>${item.name}</strong>${item.sub?'<br><span style="font-size:9px;color:#c04020">Devon sub</span>':''}</td>
+        <td><strong>${item.name}</strong>${item.sub?'<br><span style="font-size:9px;color:#c04020">Devyn sub</span>':''}</td>
         <td style="font-size:10px">${item.vendor}<br><span style="color:#999">${item.sku}</span></td>
         <td>${item.qty}</td>
         <td style="color:#666">${item.unit}</td>
@@ -869,19 +1272,38 @@ function saveNote(id,val){
   }
 }
 
-// ── PHOTO UPLOAD ──────────────────────────────────────────────────────────
+// ── PHOTO UPLOAD + DRAG-AND-DROP ─────────────────────────────────────────
 function triggerUpload(id){ document.getElementById('upload-'+id)?.click(); }
+
+function applyPhoto(id, dataUrl){
+  state.photos[id]=dataUrl; saveState();
+  // Update card image
+  const img=document.getElementById('img-'+id);
+  const ph=document.getElementById('ph-'+id);
+  if(img){ img.src=dataUrl; img.style.display='block'; }
+  if(ph) ph.style.display='none';
+  // Re-render list items
+  const allLists=[{items:WALL_ITEMS,id:'list-walltile'},{items:PAINT_ITEMS,id:'list-paint'},{items:EQUIP_ITEMS,id:'list-equipment'},{items:LIGHT_ITEMS,id:'list-lighting'}];
+  allLists.forEach(l=>{ if(l.items.find(i=>i.id===id)) renderList(l.items,l.id); });
+}
+
 function handleUpload(id, input){
   const file=input.files[0]; if(!file) return;
   const reader=new FileReader();
-  reader.onload=e=>{
-    const data=e.target.result;
-    state.photos[id]=data; saveState();
-    const img=document.getElementById('img-'+id);
-    const ph=document.getElementById('ph-'+id);
-    if(img){ img.src=data; img.style.display='block'; }
-    if(ph) ph.style.display='none';
-  };
+  reader.onload=e=>applyPhoto(id,e.target.result);
+  reader.readAsDataURL(file);
+}
+
+// Drag-and-drop
+function handleDragOver(e){ e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function handleDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function handleDrop(e, id){
+  e.preventDefault(); e.stopPropagation();
+  e.currentTarget.classList.remove('drag-over');
+  const file=(e.dataTransfer.files||[])[0];
+  if(!file||!file.type.startsWith('image/')) return;
+  const reader=new FileReader();
+  reader.onload=ev=>applyPhoto(id,ev.target.result);
   reader.readAsDataURL(file);
 }
 
