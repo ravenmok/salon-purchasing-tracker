@@ -201,7 +201,12 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
 
 .order-table-wrap{overflow-x:auto;border:1.5px solid var(--border);border-radius:8px;background:var(--card)}
 .order-table{width:100%;border-collapse:collapse;font-size:11px}
-.order-table th{background:var(--black);color:#fff;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:9px 10px;text-align:left;white-space:nowrap;position:sticky;top:52px}
+.order-table th{background:var(--black);color:#fff;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:9px 10px;text-align:left;white-space:nowrap;position:sticky;top:0}
+.order-table th.actual-col{background:#1a3a1a;color:#a8d878}
+.order-table td.actual-cell input{background:#f2faea;border-color:#8ab85a;font-weight:600;color:#2a5a0a}
+.order-table td.actual-cell input:focus{border-color:#4a7a2a;background:#e8f5d8}
+.order-table td.over-budget{background:#fff0ee}
+.order-table td.over-budget input{background:#ffece8;border-color:#e06050;color:#a02010;font-weight:700}
 .order-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
 .order-table tr:last-child td{border-bottom:none}
 .order-table tr:hover td{background:#f8f7f4}
@@ -714,9 +719,10 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
       <thead>
         <tr>
           <th>#</th><th>Category</th><th>Room / Location</th><th>Product</th>
-          <th>Vendor · SKU</th><th>Qty</th><th>Unit</th><th>Total</th>
+          <th>Vendor · SKU</th><th>Qty</th><th>Unit</th><th>Budget $</th>
           <th>Status</th><th>PO #</th><th>Vendor Contact</th>
           <th>Order Date</th><th>Exp. Delivery</th><th>Notes</th>
+          <th class="actual-col">Actual $</th>
         </tr>
       </thead>
       <tbody id="orderTableBody"></tbody>
@@ -1154,7 +1160,7 @@ function renderOrderTable(){
     const o = state.order[item.id] || {};
     const status = o.status || 'not_ordered';
     let catRow = '';
-    if(item.cat !== prevCat){ prevCat=item.cat; catRow=`<tr class="cat-header"><td colspan="14">${item.cat.toUpperCase()}</td></tr>`; }
+    if(item.cat !== prevCat){ prevCat=item.cat; catRow=`<tr class="cat-header"><td colspan="15">${item.cat.toUpperCase()}</td></tr>`; }
     rowNum++;
     return catRow+`
       <tr data-id="${item.id}">
@@ -1174,6 +1180,9 @@ function renderOrderTable(){
         <td><input type="date" value="${o.order_date||''}" oninput="updateOrder('${item.id}','order_date',this.value)"></td>
         <td><input type="date" value="${o.exp_delivery||''}" oninput="updateOrder('${item.id}','exp_delivery',this.value)"></td>
         <td><input type="text" placeholder="Notes…" value="${o.notes||''}" oninput="updateOrder('${item.id}','notes',this.value)" style="min-width:120px"></td>
+        <td class="actual-cell${o.actual&&item.total&&parseFloat(o.actual.replace(/[^0-9.]/g,''))>item.total?' over-budget':''}">
+          <input type="text" placeholder="$0.00" value="${o.actual||''}" oninput="updateOrder('${item.id}','actual',this.value);highlightActual('${item.id}',this.value,${item.total||0})" style="min-width:80px">
+        </td>
       </tr>`;
   }).join('');
   document.getElementById('orderTableBody').innerHTML = rows;
@@ -1185,6 +1194,14 @@ function updateOrder(id, field, val){
   state.order[id][field]=val;
   saveState();
   updateOrderStats();
+}
+
+function highlightActual(id, val, budget){
+  const td = document.querySelector(`tr[data-id="${id}"] td.actual-cell`);
+  if(!td) return;
+  const actual = parseFloat(val.replace(/[^0-9.]/g,''));
+  const over = budget && !isNaN(actual) && actual > budget;
+  td.classList.toggle('over-budget', over);
 }
 
 function updateOrderStats(){
@@ -1204,10 +1221,10 @@ function updateOrderStats(){
 // ── EXPORT CSV ────────────────────────────────────────────────────────────
 function exportOrderCSV(){
   const STATUS_LABELS={not_ordered:'Not Ordered',ordered:'Ordered',in_transit:'In Transit',delivered:'Delivered',backordered:'Backordered'};
-  const headers=['#','Category','Room/Location','Product','Vendor','SKU','Qty','Unit Cost','Total','Status','PO#','Vendor Contact','Order Date','Exp. Delivery','Notes'];
+  const headers=['#','Category','Room/Location','Product','Vendor','SKU','Qty','Unit Cost','Budget $','Status','PO#','Vendor Contact','Order Date','Exp. Delivery','Notes','Actual $'];
   const rows = ALL_ITEMS.map((item,i)=>{
     const o=state.order[item.id]||{};
-    return [i+1,item.cat,item.room,item.name,item.vendor,item.sku,item.qty,item.unit,item.total?'$'+item.total.toFixed(2):'—',STATUS_LABELS[o.status||'not_ordered'],o.po||'',o.contact||'',o.order_date||'',o.exp_delivery||'',o.notes||''];
+    return [i+1,item.cat,item.room,item.name,item.vendor,item.sku,item.qty,item.unit,item.total?'$'+item.total.toFixed(2):'—',STATUS_LABELS[o.status||'not_ordered'],o.po||'',o.contact||'',o.order_date||'',o.exp_delivery||'',o.notes||'',o.actual||''];
   });
   const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
