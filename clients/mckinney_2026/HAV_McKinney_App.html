@@ -738,10 +738,10 @@ tr.checked-row td{background:var(--checked-bg);color:#666}
 <script>
 // ── ALL ITEMS DATA ──────────────────────────────────────────────────────
 const ALL_ITEMS = [
-  {id:'bath1',  cat:'Tile',      room:'Bathroom 1',             name:'Capri Almond Matte Porcelain Tile',       vendor:'Floor & Decor', sku:'101488112',         qty:'26 pcs',      unit:'$13.16/pc',    total:342.16,     sub:true},
-  {id:'bath2',  cat:'Tile',      room:'Bathroom 2',             name:'Laverton Octagon Nieve / Taco Grafito',   vendor:'Home Depot',    sku:'KVV8OLNVGF',        qty:'12 cases',    unit:'$184.91/case', total:2218.92,    sub:true},
-  {id:'kitchen',cat:'Tile',      room:'Kitchen + Utility',      name:'MSI Villa Bianca 17×17 Checkerboard',     vendor:'Home Depot',    sku:'340079451',         qty:'18 cases',    unit:'$73.56/case',  total:1324.08,    sub:true},
-  {id:'shampoo',cat:'Tile',      room:'Shampoo Room (chairs)',  name:'12.6"×7.28" Marble Fan Mosaic Sheet',     vendor:'Wayfair',       sku:'IRBL1422',          qty:'381 pcs',     unit:'$40.12/pc',    total:15285.72,   sub:true},
+  {id:'bath1',  cat:'Tile',      room:'Bathroom 1',             name:'Capri Almond Matte Porcelain Tile',       vendor:'Floor & Decor', sku:'101488112',         qty:'26 pcs',      unit:'$13.16/pc',    total:342.16,     sub:true, link:'https://www.flooranddecor.com/porcelain-tile/capri-almond-matte-porcelain-tile-101488112.html'},
+  {id:'bath2',  cat:'Tile',      room:'Bathroom 2',             name:'Laverton Octagon Nieve / Taco Grafito',   vendor:'Home Depot',    sku:'KVV8OLNVGF',        qty:'12 cases',    unit:'$184.91/case', total:2218.92,    sub:true, link:'https://www.homedepot.com/p/335997641'},
+  {id:'kitchen',cat:'Tile',      room:'Kitchen + Utility',      name:'MSI Villa Bianca 17×17 Checkerboard',     vendor:'Home Depot',    sku:'340079451',         qty:'18 cases',    unit:'$73.56/case',  total:1324.08,    sub:true, link:'https://www.homedepot.com/p/340079451'},
+  {id:'shampoo',cat:'Tile',      room:'Shampoo Room (chairs)',  name:'12.6"×7.28" Marble Fan Mosaic Sheet',     vendor:'Wayfair',       sku:'IRBL1422',          qty:'381 pcs',     unit:'$40.12/pc',    total:15285.72,   sub:true, link:'https://www.wayfair.com/home-improvement/pdp/marble-online-126-x-728-marble-mosaic-sheet-subway-wall-floor-tile-irbl1422.html'},
   {id:'hw-lobby',    cat:'Hardwood', room:'Lobby',              name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'27 boxes',    unit:'$165.22/box',  total:4460.94,  img:'https://admflooring.com/wp-content/uploads/2022/07/RAGUSA-1.jpg', link:'https://admflooring.com/ragusa-white-oak-engineered-hardwood/'},
   {id:'hw-hallway',  cat:'Hardwood', room:'Hallway',            name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'22 boxes',    unit:'$165.22/box',  total:3634.84,  img:'https://admflooring.com/wp-content/uploads/2022/07/RAGUSA-1.jpg', link:'https://admflooring.com/ragusa-white-oak-engineered-hardwood/'},
   {id:'hw-salon1',   cat:'Hardwood', room:'Salon Room 1',       name:'White Oak Ragusa — ADM Flooring',         vendor:'ADM Flooring',  sku:'RAGUSA',            qty:'22 boxes',    unit:'$165.22/box',  total:3634.84,  img:'https://admflooring.com/wp-content/uploads/2022/07/RAGUSA-1.jpg', link:'https://admflooring.com/ragusa-white-oak-engineered-hardwood/'},
@@ -1159,6 +1159,8 @@ function renderOrderTable(){
   const rows = ALL_ITEMS.map(item=>{
     const o = state.order[item.id] || {};
     const status = o.status || 'not_ordered';
+    const d = getItemData(item.id);
+    const itemLink = d.link || item.link || '';
     let catRow = '';
     if(item.cat !== prevCat){ prevCat=item.cat; catRow=`<tr class="cat-header"><td colspan="15">${item.cat.toUpperCase()}</td></tr>`; }
     rowNum++;
@@ -1167,7 +1169,7 @@ function renderOrderTable(){
         <td style="color:#999;font-size:10px">${rowNum}</td>
         <td style="font-size:10px;color:#666">${item.cat}</td>
         <td>${item.room}</td>
-        <td><strong>${item.name}</strong>${item.sub?'<br><span style="font-size:9px;color:#c04020">Devyn sub</span>':''}</td>
+        <td><strong>${itemLink?`<a href="${esc(itemLink)}" target="_blank" style="color:inherit;text-decoration:none">${esc(item.name)}<span style="margin-left:4px;font-size:9px;color:var(--green);font-weight:400">↗</span></a>`:esc(item.name)}</strong>${item.sub?'<br><span style="font-size:9px;color:#c04020">Devyn sub</span>':''}</td>
         <td style="font-size:10px">${item.vendor}<br><span style="color:#999">${item.sku}</span></td>
         <td>${item.qty}</td>
         <td style="color:#666">${item.unit}</td>
@@ -1221,10 +1223,12 @@ function updateOrderStats(){
 // ── EXPORT CSV ────────────────────────────────────────────────────────────
 function exportOrderCSV(){
   const STATUS_LABELS={not_ordered:'Not Ordered',ordered:'Ordered',in_transit:'In Transit',delivered:'Delivered',backordered:'Backordered'};
-  const headers=['#','Category','Room/Location','Product','Vendor','SKU','Qty','Unit Cost','Budget $','Status','PO#','Vendor Contact','Order Date','Exp. Delivery','Notes','Actual $'];
+  const headers=['#','Category','Room/Location','Product','Product Link','Vendor','SKU','Qty','Unit Cost','Budget $','Status','PO#','Vendor Contact','Order Date','Exp. Delivery','Notes','Actual $'];
   const rows = ALL_ITEMS.map((item,i)=>{
     const o=state.order[item.id]||{};
-    return [i+1,item.cat,item.room,item.name,item.vendor,item.sku,item.qty,item.unit,item.total?'$'+item.total.toFixed(2):'—',STATUS_LABELS[o.status||'not_ordered'],o.po||'',o.contact||'',o.order_date||'',o.exp_delivery||'',o.notes||'',o.actual||''];
+    const d=getItemData(item.id);
+    const itemLink=d.link||item.link||'';
+    return [i+1,item.cat,item.room,item.name,itemLink,item.vendor,item.sku,item.qty,item.unit,item.total?'$'+item.total.toFixed(2):'—',STATUS_LABELS[o.status||'not_ordered'],o.po||'',o.contact||'',o.order_date||'',o.exp_delivery||'',o.notes||'',o.actual||''];
   });
   const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
