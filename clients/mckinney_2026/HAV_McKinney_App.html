@@ -988,7 +988,7 @@ function getItemData(id){
     unit:    allItem.unit || '',
     total:   allItem.total || null,
     img:     state.photos[id] || listItem.img || cardImgs[id] || '',
-    link:    ed.link || '',
+    link:    ed.link || listItem.link || allItem.link || '',
     note:    ed.note !== undefined ? ed.note : (listItem.note||''),
     checked: !!state.checked[id],
     approval: state.approvals[id]||'',
@@ -1285,6 +1285,8 @@ function applyPhoto(id, dataUrl){
   // Re-render list items
   const allLists=[{items:WALL_ITEMS,id:'list-walltile'},{items:PAINT_ITEMS,id:'list-paint'},{items:EQUIP_ITEMS,id:'list-equipment'},{items:LIGHT_ITEMS,id:'list-lighting'}];
   allLists.forEach(l=>{ if(l.items.find(i=>i.id===id)) renderList(l.items,l.id); });
+  // Keep Rooms view in sync regardless of active tab
+  renderRoomView();
 }
 
 function handleUpload(id, input){
