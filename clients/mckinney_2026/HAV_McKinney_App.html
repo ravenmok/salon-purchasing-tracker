@@ -817,13 +817,13 @@ let state = JSON.parse(localStorage.getItem(KEY) || '{"role":"designer","checked
 if(!state.itemEdits) state.itemEdits={};
 if(!state.customRoomItems) state.customRoomItems={};
 
-// Debounced Supabase sync — role and photos are device-local only
+// Debounced Supabase sync — role is device-local (view preference), everything else syncs
 let _saveTimer = null;
 function saveState(){
   localStorage.setItem(KEY, JSON.stringify(state));
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(async () => {
-    const {role:_r, photos:_p, ...syncable} = state;
+    const {role:_r, ...syncable} = state;
     try {
       await sb.from('hav_mckinney_state')
         .upsert({key: SB_STATE_KEY, value: syncable, updated_at: new Date().toISOString()});
@@ -1454,8 +1454,7 @@ async function loadRemoteState(){
       .select('value').eq('key', SB_STATE_KEY).single();
     if(error || !data?.value || !Object.keys(data.value).length) return;
     const localRole = state.role;
-    const localPhotos = state.photos;
-    state = {...data.value, role: localRole, photos: {...localPhotos}};
+    state = {...data.value, role: localRole};
     if(!state.itemEdits) state.itemEdits={};
     if(!state.customRoomItems) state.customRoomItems={};
     localStorage.setItem(KEY, JSON.stringify(state));
@@ -1471,8 +1470,7 @@ function subscribeToChanges(){
     }, (payload) => {
       if(!payload.new?.value) return;
       const localRole = state.role;
-      const localPhotos = state.photos;
-      state = {...payload.new.value, role: localRole, photos: {...localPhotos}};
+      state = {...payload.new.value, role: localRole};
       if(!state.itemEdits) state.itemEdits={};
       if(!state.customRoomItems) state.customRoomItems={};
       localStorage.setItem(KEY, JSON.stringify(state));
