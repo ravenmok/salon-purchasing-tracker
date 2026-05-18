@@ -1,0 +1,7 @@
+[build]
+  publish = "clients/mckinney_2026"
+
+[[redirects]]
+  from = "/"
+  to = "/HAV_McKinney_App.html"
+  status = 200

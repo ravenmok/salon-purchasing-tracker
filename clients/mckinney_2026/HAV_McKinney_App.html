@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hair Salon McKinney — Purchasing Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -807,10 +808,28 @@ const LIGHT_ITEMS = [
 
 // ── STATE ───────────────────────────────────────────────────────────────
 const KEY = 'mck_state_v2';
+const SB_URL = 'https://zimjsylgwwvdyvvboggz.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppbWpzeWxnd3d2ZHl2dmJvZ2d6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NDQ2NzksImV4cCI6MjA5MDMyMDY3OX0.2e5MZeqoQ4bndQpCXr51xd4leKdQ_o8EQEXLtfDVxnE';
+const SB_STATE_KEY = 'mckinney_2026';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
 let state = JSON.parse(localStorage.getItem(KEY) || '{"role":"designer","checked":{},"notes":{},"approvals":{},"order":{},"photos":{},"itemEdits":{},"customRoomItems":{}}');
 if(!state.itemEdits) state.itemEdits={};
 if(!state.customRoomItems) state.customRoomItems={};
-function saveState(){localStorage.setItem(KEY,JSON.stringify(state))}
+
+// Debounced Supabase sync — role and photos are device-local only
+let _saveTimer = null;
+function saveState(){
+  localStorage.setItem(KEY, JSON.stringify(state));
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(async () => {
+    const {role:_r, photos:_p, ...syncable} = state;
+    try {
+      await sb.from('hav_mckinney_state')
+        .upsert({key: SB_STATE_KEY, value: syncable, updated_at: new Date().toISOString()});
+    } catch(e){ console.warn('sync failed', e); }
+  }, 800);
+}
 
 // ── ROLE ────────────────────────────────────────────────────────────────
 function setRole(r){
@@ -1371,20 +1390,29 @@ function updateTotals(){
   document.getElementById('pillTotal').textContent=`Total: $${TOTAL_COST.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────
-function init(){
+// ── APPLY STATE TO DOM ────────────────────────────────────────────────────
+function applyState(){
   renderList(WALL_ITEMS,'list-walltile');
   renderList(PAINT_ITEMS,'list-paint');
   renderList(EQUIP_ITEMS,'list-equipment');
   renderList(LIGHT_ITEMS,'list-lighting');
-
-  // Restore role
   const r = state.role || 'designer';
-  document.body.dataset.role = r;
-  document.querySelectorAll('.role-tab').forEach(t=>t.classList.toggle('active',t.dataset.r===r));
   if(r==='order') renderOrderTable();
+  if(r==='rooms') renderRoomView();
 
-  // Restore checked cards
+  // Reset card states before applying (handles remote unchecks)
+  Object.keys(COST_ITEMS).forEach(id=>{
+    const card = document.getElementById('card-'+id);
+    if(card) card.classList.remove('checked','approved','flagged');
+    const ov = document.getElementById('overlay-'+id);
+    if(ov) ov.textContent='';
+  });
+  ['lobby','hallway','salon1','salon2','shampooroom','office'].forEach(id=>{
+    document.getElementById('row-'+id)?.classList.remove('checked-row');
+    document.getElementById('row-'+id)?.querySelector('.row-check-btn')?.classList.remove('checked-btn');
+  });
+
+  // Apply current state
   Object.keys(COST_ITEMS).forEach(id=>{
     if(state.checked[id]) document.getElementById('card-'+id)?.classList.add('checked');
     if(state.approvals[id]==='approved'){ document.getElementById('card-'+id)?.classList.add('approved'); const ov=document.getElementById('overlay-'+id); if(ov) ov.textContent='✓ Approved'; }
@@ -1402,19 +1430,60 @@ function init(){
       if(ph) ph.style.display='none';
     }
   });
-
-  // Restore row checks
   ['lobby','hallway','salon1','salon2','shampooroom','office'].forEach(id=>{
     if(state.checked[id]){
       document.getElementById('row-'+id)?.classList.add('checked-row');
       document.getElementById('row-'+id)?.querySelector('.row-check-btn')?.classList.add('checked-btn');
     }
   });
-
   updateTotals();
 }
 
+// ── INIT ──────────────────────────────────────────────────────────────────
+function init(){
+  const r = state.role || 'designer';
+  document.body.dataset.role = r;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.toggle('active',t.dataset.r===r));
+  applyState();
+}
+
+// ── SUPABASE SYNC ─────────────────────────────────────────────────────────
+async function loadRemoteState(){
+  try {
+    const {data, error} = await sb.from('hav_mckinney_state')
+      .select('value').eq('key', SB_STATE_KEY).single();
+    if(error || !data?.value || !Object.keys(data.value).length) return;
+    const localRole = state.role;
+    const localPhotos = state.photos;
+    state = {...data.value, role: localRole, photos: {...localPhotos}};
+    if(!state.itemEdits) state.itemEdits={};
+    if(!state.customRoomItems) state.customRoomItems={};
+    localStorage.setItem(KEY, JSON.stringify(state));
+    applyState();
+  } catch(e){ console.warn('remote load failed', e); }
+}
+
+function subscribeToChanges(){
+  sb.channel('hav_state_ch')
+    .on('postgres_changes', {
+      event: 'UPDATE', schema: 'public',
+      table: 'hav_mckinney_state', filter: 'key=eq.mckinney_2026'
+    }, (payload) => {
+      if(!payload.new?.value) return;
+      const localRole = state.role;
+      const localPhotos = state.photos;
+      state = {...payload.new.value, role: localRole, photos: {...localPhotos}};
+      if(!state.itemEdits) state.itemEdits={};
+      if(!state.customRoomItems) state.customRoomItems={};
+      localStorage.setItem(KEY, JSON.stringify(state));
+      applyState();
+    })
+    .subscribe();
+}
+
 init();
+loadRemoteState();
+subscribeToChanges();
 </script>
 </body>
 </html>
